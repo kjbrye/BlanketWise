@@ -397,7 +397,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
           <div className="space-y-3">
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-xl">✂️</span>
+                <div className="w-8 h-8 rounded-full bg-[#D4A84B] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243z" />
+                  </svg>
+                </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Clipped</div>
                   <div className="text-sm text-[#6B5344]">+15°F to all thresholds</div>
@@ -410,7 +414,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-xl">👴</span>
+                <div className="w-8 h-8 rounded-full bg-[#8B4513] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Senior Horse (20+ years)</div>
                   <div className="text-sm text-[#6B5344]">+5°F to all thresholds</div>
@@ -423,7 +431,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-xl">🦴</span>
+                <div className="w-8 h-8 rounded-full bg-[#A0522D] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                  </svg>
+                </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Thin/Hard Keeper</div>
                   <div className="text-sm text-[#6B5344]">+8°F to all thresholds</div>
@@ -442,7 +454,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
           <div className="space-y-3">
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-xl">🐴</span>
+                <div className="w-8 h-8 rounded-full bg-[#6B5344] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                  </svg>
+                </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Coat Growth Level</div>
                   <div className="text-sm text-[#6B5344]">-5°F to +5°F range</div>
@@ -455,7 +471,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-xl">❄️</span>
+                <div className="w-8 h-8 rounded-full bg-[#5C7C9A] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Cold Tolerance</div>
                   <div className="text-sm text-[#6B5344]">-5°F to +5°F range</div>
@@ -473,7 +493,11 @@ export default function Settings({ settings, setSettings, location, setLocation 
           <h4 className="font-medium text-[#5C4033] mb-3">Temperature Buffer (Settings)</h4>
           <div className="bg-[#FDF8F0] rounded-xl p-4">
             <div className="flex items-start gap-3">
-              <span className="text-xl">🎚️</span>
+              <div className="w-8 h-8 rounded-full bg-[#9CAF88] flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </div>
               <div>
                 <div className="font-medium text-[#5C4033]">User Preference</div>
                 <div className="text-sm text-[#6B5344]">0°F to +15°F (default: 0)</div>
