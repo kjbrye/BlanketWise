@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import MyHorses from './pages/MyHorses';
+import BlanketInventory from './pages/BlanketInventory';
 
 // ============================================
 // BLANKETWISE - HORSE BLANKET ADVISOR
@@ -860,6 +861,17 @@ export default function App() {
                 setHorses={setHorses}
                 activeHorseId={activeHorseId}
                 setActiveHorseId={setActiveHorseId}
+              />
+            }
+          />
+          <Route
+            path="/inventory"
+            element={
+              <BlanketInventory
+                blankets={blankets}
+                setBlankets={setBlankets}
+                currentBlanketId={currentBlanketId}
+                setCurrentBlanketId={setCurrentBlanketId}
               />
             }
           />
