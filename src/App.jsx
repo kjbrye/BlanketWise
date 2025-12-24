@@ -556,114 +556,54 @@ function Navigation({ location: userLocation }) {
 // DASHBOARD COMPONENT
 // ============================================
 function Dashboard({
-  horses, setHorses, activeHorseId, setActiveHorseId,
+  horses, activeHorseId, setActiveHorseId,
   blankets, currentBlanketId, setCurrentBlanketId,
-  weather, settings, setSettings, location
+  weather, settings, location
 }) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
   const recommendation = getRecommendation(weather, activeHorse, settings, blankets);
   const schedule = getDailySchedule(weather, activeHorse, settings, blankets);
 
-  const updateHorse = (updates) => {
-    setHorses(horses.map(h => h.id === activeHorseId ? { ...h, ...updates } : h));
-  };
-
-  const updateSettings = (key, value) => {
-    setSettings({ ...settings, [key]: value });
-  };
-
-  const coatLabel = activeHorse.coatGrowth < 33 ? "Light" : activeHorse.coatGrowth < 66 ? "Medium" : "Heavy";
-  const toleranceLabel = activeHorse.coldTolerance < 33 ? "Sensitive" : activeHorse.coldTolerance < 66 ? "Normal" : "Hardy";
-
   return (
     <>
-      
       {/* Main Layout */}
-      <div className="grid grid-cols-[280px_1fr_320px] min-h-[calc(100vh-72px)]">
-        {/* Left Sidebar */}
-        <aside className="bg-white border-r border-[rgba(139,69,19,0.15)] p-5 overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-lg font-semibold text-[#5C4033]">My Horses</h2>
-            <button className="w-7 h-7 bg-[#9CAF88] rounded-md text-white flex items-center justify-center hover:bg-[#9CAF88]/90 transition-colors">
-              +
-            </button>
-          </div>
-          
-          {horses.map(horse => (
-            <HorseCard 
-              key={horse.id}
-              horse={horse}
-              isActive={horse.id === activeHorseId}
-              onClick={() => setActiveHorseId(horse.id)}
-            />
-          ))}
-          
-          <button className="w-full text-left p-4 rounded-xl bg-[#FDF8F0] hover:bg-[#FDF8F0]/80 transition-colors border-2 border-dashed border-[rgba(139,69,19,0.15)]">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-[rgba(139,69,19,0.15)]/50 flex items-center justify-center text-2xl text-[#6B5344]">
-                +
-              </div>
-              <div>
-                <div className="font-semibold text-[#6B5344]">Add New Horse</div>
-                <div className="text-sm text-[#6B5344]">Click to create profile</div>
-              </div>
-            </div>
-          </button>
-          
-          <div className="mt-6 pt-4 border-t border-[rgba(139,69,19,0.15)]">
-            <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              Horse Settings
-            </h3>
-            
-            <Slider value={activeHorse.coatGrowth} onChange={(v) => updateHorse({ coatGrowth: v })} label="Coat Growth Level" valueLabel={coatLabel} />
-            <Slider value={activeHorse.coldTolerance} onChange={(v) => updateHorse({ coldTolerance: v })} label="Cold Tolerance" valueLabel={toleranceLabel} />
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Body Clipped</div>
-                <div className="text-xs text-[#6B5344]">Full or partial clip</div>
-              </div>
-              <Toggle active={activeHorse.isClipped} onChange={() => updateHorse({ isClipped: !activeHorse.isClipped })} />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Senior Horse</div>
-                <div className="text-xs text-[#6B5344]">Age 20+ years</div>
-              </div>
-              <Toggle active={activeHorse.isSenior} onChange={() => updateHorse({ isSenior: !activeHorse.isSenior })} />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Thin/Hard Keeper</div>
-                <div className="text-xs text-[#6B5344]">Below ideal weight</div>
-              </div>
-              <Toggle active={activeHorse.isThinKeeper} onChange={() => updateHorse({ isThinKeeper: !activeHorse.isThinKeeper })} />
-            </div>
-          </div>
-        </aside>
-        
+      <div className="grid grid-cols-[1fr_320px] min-h-[calc(100vh-72px)]">
         {/* Main Content */}
         <main className="p-6 overflow-y-auto">
           <WeatherBanner weather={weather} location={location} />
-          
+
+          {/* Horse Selector */}
+          {horses.length > 1 && (
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-sm text-[#6B5344]">Showing recommendations for:</span>
+              <select
+                value={activeHorseId}
+                onChange={(e) => setActiveHorseId(parseInt(e.target.value))}
+                className="px-4 py-2 rounded-lg border border-[rgba(139,69,19,0.3)] focus:border-[#D4A84B] focus:outline-none bg-white font-medium text-[#5C4033]"
+              >
+                {horses.map(horse => (
+                  <option key={horse.id} value={horse.id}>{horse.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-xl font-semibold text-[#5C4033]">
               Current Recommendation for {activeHorse.name}
             </h2>
             <span className="text-sm text-[#6B5344]">Updated just now</span>
           </div>
-          
-          <RecommendationCard 
+
+          <RecommendationCard
             recommendation={recommendation}
             horse={activeHorse}
             currentBlanketId={currentBlanketId}
             setCurrentBlanketId={setCurrentBlanketId}
           />
-          
+
           <DailySchedule schedule={schedule} />
-          
+
           <div>
             <h2 className="font-display text-xl font-semibold text-[#5C4033] mb-4">7-Day Forecast & Recommendations</h2>
             <div className="grid grid-cols-7 gap-2">
@@ -676,7 +616,7 @@ function Dashboard({
                 { day: "Mon", icon: "🌤️", high: 52, low: 35, rec: "Light" },
                 { day: "Tue", icon: "☀️", high: 55, low: 38, rec: "Sheet/None" },
               ].map((day, i) => (
-                <div 
+                <div
                   key={i}
                   className={`bg-white rounded-xl p-3 text-center border transition-all ${
                     i === 0 ? 'border-[#D4A84B] shadow-md' : 'border-[rgba(139,69,19,0.15)] hover:shadow-md'
@@ -693,62 +633,16 @@ function Dashboard({
             </div>
           </div>
         </main>
-        
+
         {/* Right Sidebar */}
         <aside className="bg-white border-l border-[rgba(139,69,19,0.15)] p-5 overflow-y-auto">
           <div className="mb-6">
             <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              Recommendation Settings
-            </h3>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Use Feels-Like Temp</div>
-                <div className="text-xs text-[#6B5344]">Account for wind chill</div>
-              </div>
-              <Toggle active={settings.useFeelsLike} onChange={() => updateSettings('useFeelsLike', !settings.useFeelsLike)} />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Rain/Precip Priority</div>
-                <div className="text-xs text-[#6B5344]">Prioritize waterproofing</div>
-              </div>
-              <Toggle active={settings.rainPriority} onChange={() => updateSettings('rainPriority', !settings.rainPriority)} />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Exercise Adjustment</div>
-                <div className="text-xs text-[#6B5344]">Adjust for sweat/chill</div>
-              </div>
-              <Toggle active={settings.exerciseAdjustment} onChange={() => updateSettings('exerciseAdjustment', !settings.exerciseAdjustment)} />
-            </div>
-            
-            <div className="mt-4">
-              <div className="flex justify-between mb-2">
-                <span className="text-sm">Temperature Buffer</span>
-                <span className="text-sm font-semibold text-[#8B4513]">+{settings.tempBuffer}°F</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="15"
-                value={settings.tempBuffer}
-                onChange={(e) => updateSettings('tempBuffer', parseInt(e.target.value))}
-                className="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-[#D4A84B]"
-              />
-              <div className="text-xs text-[#6B5344] mt-1">Blanket earlier/warmer</div>
-            </div>
-          </div>
-          
-          <div className="mb-6">
-            <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              My Blanket Inventory
+              Current Blanket
             </h3>
             <div className="space-y-2">
               {blankets.map(blanket => (
-                <BlanketInventoryItem 
+                <BlanketInventoryItem
                   key={blanket.id}
                   blanket={blanket}
                   isInUse={blanket.id === currentBlanketId}
@@ -756,8 +650,14 @@ function Dashboard({
                 />
               ))}
             </div>
+            <Link
+              to="/inventory"
+              className="block text-center text-sm text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
+            >
+              Manage Inventory →
+            </Link>
           </div>
-          
+
           <div className="mb-6">
             <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
               Quick Actions
@@ -769,47 +669,38 @@ function Dashboard({
               <QuickAction icon="🔔" label="Set Alert" />
             </div>
           </div>
-          
+
           <WeatherAlert message={
             <><strong>Saturday:</strong> Significant temperature drop expected (18°F overnight low). Consider having your heavyweight blanket ready.</>
           } />
-          
+
+          {/* Active Horse Summary */}
           <div className="mt-6">
             <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              Notifications
+              {activeHorse.name}'s Profile
             </h3>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Blanket Change Alerts</div>
-                <div className="text-xs text-[#6B5344]">When rec changes</div>
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-2xl">
+                  🐎
+                </div>
+                <div>
+                  <div className="font-semibold text-[#2C1810]">{activeHorse.name}</div>
+                  <div className="text-sm text-[#6B5344]">{activeHorse.breed}</div>
+                </div>
               </div>
-              <Toggle 
-                active={settings.notifications.blanketChange} 
-                onChange={() => updateSettings('notifications', { ...settings.notifications, blanketChange: !settings.notifications.blanketChange })} 
-              />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Severe Weather</div>
-                <div className="text-xs text-[#6B5344]">Storm warnings</div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div><span className="text-[#6B5344]">Age:</span> <span className="font-medium">{activeHorse.age} yrs</span></div>
+                <div><span className="text-[#6B5344]">Coat:</span> <span className="font-medium">{activeHorse.coatGrowth < 33 ? "Light" : activeHorse.coatGrowth < 66 ? "Medium" : "Heavy"}</span></div>
+                <div><span className="text-[#6B5344]">Clipped:</span> <span className="font-medium">{activeHorse.isClipped ? "Yes" : "No"}</span></div>
+                <div><span className="text-[#6B5344]">Senior:</span> <span className="font-medium">{activeHorse.isSenior ? "Yes" : "No"}</span></div>
               </div>
-              <Toggle 
-                active={settings.notifications.severeWeather} 
-                onChange={() => updateSettings('notifications', { ...settings.notifications, severeWeather: !settings.notifications.severeWeather })} 
-              />
-            </div>
-            
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <div className="text-sm">Daily Summary</div>
-                <div className="text-xs text-[#6B5344]">Morning forecast</div>
-              </div>
-              <Toggle 
-                active={settings.notifications.dailySummary} 
-                onChange={() => updateSettings('notifications', { ...settings.notifications, dailySummary: !settings.notifications.dailySummary })} 
-              />
+              <Link
+                to="/horses"
+                className="block text-center text-sm text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
+              >
+                Edit Profile →
+              </Link>
             </div>
           </div>
         </aside>
@@ -841,7 +732,6 @@ export default function App() {
             element={
               <Dashboard
                 horses={horses}
-                setHorses={setHorses}
                 activeHorseId={activeHorseId}
                 setActiveHorseId={setActiveHorseId}
                 blankets={blankets}
@@ -849,7 +739,6 @@ export default function App() {
                 setCurrentBlanketId={setCurrentBlanketId}
                 weather={weather}
                 settings={settings}
-                setSettings={setSettings}
                 location={location}
               />
             }
