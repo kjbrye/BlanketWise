@@ -1,0 +1,204 @@
+/**
+ * Recommendation Engine
+ * Baseline for midwest horse with natural coat:
+ * - Above 40°F: No blanket (sheet if rain)
+ * - 30-40°F: Lightweight
+ * - 15-30°F: Medium
+ * - Below 15°F: Heavyweight
+ * - Strong winds or frigid temps: Add neck rug
+ */
+
+function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug) {
+  const parts = [];
+  const coatLevel = horse.coatGrowth < 33 ? "light" : horse.coatGrowth < 66 ? "medium" : "heavy";
+  const coatProtection = coatLevel === "heavy" ? "excellent" : coatLevel === "medium" ? "moderate" : "minimal";
+
+  // Weather-specific recommendation based on weight needed
+  if (weight === "none") {
+    if (effectiveTemp >= 60) {
+      parts.push(`At ${effectiveTemp}°F, it's warm enough that ${horse.name} will be comfortable without a blanket`);
+    } else if (effectiveTemp >= 50) {
+      parts.push(`The mild ${effectiveTemp}°F temperature is comfortable for ${horse.name}'s ${coatLevel} coat`);
+    } else {
+      parts.push(`At ${effectiveTemp}°F, ${horse.name}'s ${coatLevel} winter coat provides ${coatProtection} natural insulation`);
+    }
+  } else if (weight === "sheet") {
+    if (weather.precipChance > 40) {
+      parts.push(`With ${weather.precipChance}% chance of precipitation, a rain sheet will keep ${horse.name} dry`);
+    } else {
+      parts.push(`A light sheet will provide just enough coverage for ${horse.name} in these conditions`);
+    }
+  } else if (weight === "light") {
+    parts.push(`At ${effectiveTemp}°F, a lightweight blanket will supplement ${horse.name}'s natural coat`);
+    if (weather.wind > 10) {
+      parts.push(`The ${weather.wind} mph winds make the extra layer helpful`);
+    }
+  } else if (weight === "medium") {
+    parts.push(`The ${effectiveTemp}°F temperature calls for medium-weight coverage`);
+    if (coatLevel === "light" || horse.isClipped) {
+      parts.push(`${horse.name}'s ${horse.isClipped ? "clipped coat" : "lighter coat"} needs the extra insulation`);
+    } else if (weather.wind > 15) {
+      parts.push(`Wind at ${weather.wind} mph makes it feel colder`);
+    }
+  } else if (weight === "heavy") {
+    if (effectiveTemp < 10) {
+      parts.push(`With temperatures at ${effectiveTemp}°F, heavyweight protection is essential for ${horse.name}`);
+    } else {
+      parts.push(`The cold ${effectiveTemp}°F conditions require heavyweight blanketing`);
+    }
+    if (weather.wind > 15) {
+      parts.push(`Strong ${weather.wind} mph winds increase the chill factor`);
+    }
+  }
+
+  // Add modifiers for special horse conditions
+  if (horse.isClipped && weight !== "none" && weight !== "sheet") {
+    parts.push("Clipped horses need extra warmth to compensate for reduced natural insulation");
+  }
+
+  if (horse.isSenior) {
+    parts.push("As a senior, staying warm helps maintain comfort and health");
+  }
+
+  if (horse.isThinKeeper && weight !== "none") {
+    parts.push("Extra coverage helps hard keepers conserve body heat");
+  }
+
+  // Waterproof note if raining
+  if (weather.precipChance > 30 && settings.rainPriority && weight !== "none") {
+    parts.push("Make sure to use a waterproof option with rain in the forecast");
+  }
+
+  // Neck rug recommendation
+  if (needsNeckRug) {
+    if (weather.wind > 20) {
+      parts.push("Add a neck rug for protection against the strong winds");
+    } else {
+      parts.push("A neck rug will provide extra warmth in these frigid temperatures");
+    }
+  }
+
+  return parts.join(". ") + ".";
+}
+
+export function getRecommendation(weather, horse, settings, blankets) {
+  const effectiveTemp = settings.useFeelsLike ? weather.feelsLike : weather.temp;
+
+  // Base thresholds for a horse with natural coat (coatGrowth=50)
+  let sheetMax = 50;   // Sheet only needed for rain above 40°F
+  let lightMax = 40;   // Lightweight: 30-40°F
+  let mediumMax = 30;  // Medium: 15-30°F
+  let heavyMax = 15;   // Heavy: below 15°F
+
+  // Coat adjustment: less coat = blanket at higher temps
+  // At coatGrowth=0 (clipped/light): +5°F to thresholds
+  // At coatGrowth=100 (very thick): -5°F to thresholds
+  const coatAdjustment = (horse.coatGrowth - 50) / 10;
+  lightMax -= coatAdjustment;
+  mediumMax -= coatAdjustment;
+  heavyMax -= coatAdjustment;
+
+  // Tolerance adjustment: sensitive horses need blankets sooner
+  const toleranceAdjustment = (horse.coldTolerance - 50) / 10;
+  lightMax -= toleranceAdjustment;
+  mediumMax -= toleranceAdjustment;
+  heavyMax -= toleranceAdjustment;
+
+  // Clipped horses need significantly more coverage
+  if (horse.isClipped) {
+    lightMax += 15;
+    mediumMax += 15;
+    heavyMax += 15;
+  }
+
+  // Senior horses benefit from slightly warmer coverage
+  if (horse.isSenior) {
+    lightMax += 5;
+    mediumMax += 5;
+    heavyMax += 5;
+  }
+
+  // Thin keepers need extra warmth
+  if (horse.isThinKeeper) {
+    lightMax += 8;
+    mediumMax += 8;
+    heavyMax += 8;
+  }
+
+  // User's temperature buffer preference
+  lightMax += settings.tempBuffer;
+  mediumMax += settings.tempBuffer;
+  heavyMax += settings.tempBuffer;
+
+  let weightNeeded = "none";
+  let gramsNeeded = 0;
+
+  if (effectiveTemp <= heavyMax) {
+    weightNeeded = "heavy";
+    gramsNeeded = 300;
+  } else if (effectiveTemp <= mediumMax) {
+    weightNeeded = "medium";
+    gramsNeeded = 200;
+  } else if (effectiveTemp <= lightMax) {
+    weightNeeded = "light";
+    gramsNeeded = 100;
+  } else if (weather.precipChance > 40 && settings.rainPriority) {
+    // Only recommend sheet for rain, not just cool temps
+    weightNeeded = "sheet";
+    gramsNeeded = 0;
+  }
+
+  const needsWaterproof = weather.precipChance > 30 && settings.rainPriority;
+
+  // Neck rug needed for strong winds (>20mph) or frigid temps (<10°F)
+  const needsNeckRug = weather.wind > 20 || effectiveTemp < 10;
+
+  let confidence = 95;
+  if (effectiveTemp > mediumMax - 3 && effectiveTemp < mediumMax + 3) confidence = 80;
+  if (weather.precipChance > 50) confidence -= 5;
+
+  let recommendedBlanket = null;
+  const sortedBlankets = [...blankets].sort((a, b) => {
+    const aDiff = Math.abs(a.grams - gramsNeeded);
+    const bDiff = Math.abs(b.grams - gramsNeeded);
+    return aDiff - bDiff;
+  });
+
+  for (const blanket of sortedBlankets) {
+    if (needsWaterproof && !blanket.waterproof) continue;
+    recommendedBlanket = blanket;
+    break;
+  }
+
+  if (!recommendedBlanket && sortedBlankets.length > 0) {
+    recommendedBlanket = sortedBlankets[0];
+  }
+
+  const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp, needsNeckRug);
+
+  return {
+    weightNeeded,
+    gramsNeeded,
+    recommendedBlanket,
+    confidence,
+    reasoning,
+    needsWaterproof,
+    needsNeckRug,
+    effectiveTemp,
+  };
+}
+
+export function getDailySchedule(weather, horse, settings, blankets) {
+  const times = [
+    { label: "Morning (6 AM)", iconType: "morning", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2 },
+    { label: "Afternoon (Now)", iconType: "afternoon", temp: weather.temp, feelsLike: weather.feelsLike, current: true },
+    { label: "Evening (6 PM)", iconType: "evening", temp: weather.temp - 6, feelsLike: weather.feelsLike - 8 },
+    { label: "Overnight", iconType: "overnight", temp: weather.tonightLow, feelsLike: weather.tonightLow - 4 },
+  ];
+
+  return times.map(time => {
+    const timeWeather = { ...weather, temp: time.temp, feelsLike: time.feelsLike };
+    const rec = getRecommendation(timeWeather, horse, settings, blankets);
+    return { ...time, recommendation: rec.weightNeeded };
+  });
+}

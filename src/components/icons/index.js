@@ -1,0 +1,5 @@
+export { default as BlanketIcon } from './BlanketIcon';
+export { default as ClipperIcon } from './ClipperIcon';
+export { default as HorseIcon } from './HorseIcon';
+export { default as WeatherIcon } from './WeatherIcon';
+export { default as ScheduleIcon } from './ScheduleIcon';
