@@ -360,32 +360,30 @@ export default function Settings({ settings, setSettings, location, setLocation 
           <p className="text-sm text-[#6B5344] mb-3">
             For a horse with a natural winter coat, acclimated to midwest weather:
           </p>
-          <div className="bg-[#FDF8F0] rounded-xl p-4">
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
-                <span className="text-[#6B5344]">No blanket</span>
-                <span className="font-medium text-[#5C4033]">Above 40°F</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
-                <span className="text-[#6B5344]">Rain sheet</span>
-                <span className="font-medium text-[#5C4033]">Rain expected</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
-                <span className="text-[#6B5344]">Lightweight</span>
-                <span className="font-medium text-[#5C4033]">30–40°F</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
-                <span className="text-[#6B5344]">Medium weight</span>
-                <span className="font-medium text-[#5C4033]">15–30°F</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
-                <span className="text-[#6B5344]">Heavyweight</span>
-                <span className="font-medium text-[#5C4033]">Below 15°F</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-[#6B5344]">+ Neck rug</span>
-                <span className="font-medium text-[#5C4033]">Below 10°F or wind &gt;20mph</span>
-              </div>
+          <div className="bg-[#FDF8F0] rounded-xl p-4 text-sm">
+            <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+              <span className="text-[#6B5344]">Above 40°F</span>
+              <span className="font-medium text-[#5C4033]">No blanket</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+              <span className="text-[#6B5344]">30–40°F</span>
+              <span className="font-medium text-[#5C4033]">Lightweight</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+              <span className="text-[#6B5344]">15–30°F</span>
+              <span className="font-medium text-[#5C4033]">Medium weight</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+              <span className="text-[#6B5344]">Below 15°F</span>
+              <span className="font-medium text-[#5C4033]">Heavyweight</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+              <span className="text-[#6B5344]">Below 10°F or wind &gt;20mph</span>
+              <span className="font-medium text-[#5C4033]">+ Neck rug</span>
+            </div>
+            <div className="flex justify-between py-2">
+              <span className="text-[#6B5344]">Rain expected (any temp)</span>
+              <span className="font-medium text-[#5C4033]">Waterproof / sheet</span>
             </div>
           </div>
         </div>
