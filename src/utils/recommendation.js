@@ -1,11 +1,12 @@
 /**
  * Recommendation Engine
  * Baseline for midwest horse with natural coat:
- * - Above 40°F: No blanket (sheet if rain)
+ * - Above 40°F: No blanket
  * - 30-40°F: Lightweight
- * - 15-30°F: Medium
+ * - 15-30°F: Medium weight
  * - Below 15°F: Heavyweight
- * - Strong winds or frigid temps: Add neck rug
+ * - Below 10°F or wind >20mph: + Neck rug
+ * - Rain expected (any temp): Waterproof / sheet
  */
 
 function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug) {
@@ -85,10 +86,11 @@ export function getRecommendation(weather, horse, settings, blankets) {
   const effectiveTemp = settings.useFeelsLike ? weather.feelsLike : weather.temp;
 
   // Base thresholds for a horse with natural coat (coatGrowth=50)
+  // Using <= comparisons, so heavyMax=14 means temp < 15 triggers heavy
   let sheetMax = 50;   // Sheet only needed for rain above 40°F
-  let lightMax = 40;   // Lightweight: 30-40°F
-  let mediumMax = 30;  // Medium: 15-30°F
-  let heavyMax = 15;   // Heavy: below 15°F
+  let lightMax = 40;   // Lightweight: 31-40°F (temp <= 40 and > 30)
+  let mediumMax = 30;  // Medium: 15-30°F (temp <= 30 and > 14)
+  let heavyMax = 14;   // Heavy: below 15°F (temp <= 14, i.e., temp < 15)
 
   // Coat adjustment: less coat = blanket at higher temps
   // At coatGrowth=0 (clipped/light): +5°F to thresholds

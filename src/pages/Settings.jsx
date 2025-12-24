@@ -237,9 +237,9 @@ export default function Settings({ settings, setSettings, location, setLocation 
           </div>
           <div className="ml-11">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[#6B5344]">Conservative</span>
+              <span className="text-sm text-[#6B5344]">Less coverage</span>
               <span className="font-semibold text-[#8B4513]">+{settings.tempBuffer}°F</span>
-              <span className="text-sm text-[#6B5344]">Aggressive</span>
+              <span className="text-sm text-[#6B5344]">More coverage</span>
             </div>
             <input
               type="range"
