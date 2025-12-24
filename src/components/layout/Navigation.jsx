@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { BlanketIcon } from '../icons';
 
-export default function Navigation({ location: userLocation }) {
+export default function Navigation({ location: userLocation, onLocationClick }) {
   const routerLocation = useLocation();
 
   const navItems = [
@@ -41,9 +41,12 @@ export default function Navigation({ location: userLocation }) {
       </nav>
 
       <div className="flex items-center gap-4">
-        <span className="text-[#FDF8F0]/80 text-sm flex items-center gap-1">
+        <button
+          onClick={onLocationClick}
+          className="text-[#FDF8F0]/80 text-sm flex items-center gap-1 hover:text-[#FDF8F0] transition-colors"
+        >
           <MapPin className="w-4 h-4" /> {userLocation}
-        </span>
+        </button>
         <div className="w-10 h-10 bg-[#D4A84B] rounded-full flex items-center justify-center font-semibold text-[#5C4033]">
           KB
         </div>

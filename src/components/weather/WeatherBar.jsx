@@ -1,7 +1,7 @@
 import { Wind, Droplet, Moon, MapPin } from 'lucide-react';
 import { WeatherIcon } from '../icons';
 
-export default function WeatherBar({ weather, location }) {
+export default function WeatherBar({ weather, location, onLocationClick }) {
   return (
     <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-xl mb-6">
       <div className="flex items-center gap-6">
@@ -27,9 +27,12 @@ export default function WeatherBar({ weather, location }) {
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-1 text-sm text-[#6B5344]">
+      <button
+        onClick={onLocationClick}
+        className="flex items-center gap-1 text-sm text-[#6B5344] hover:text-[#5C4033] transition-colors"
+      >
         <MapPin className="w-4 h-4" /> {location}
-      </div>
+      </button>
     </div>
   );
 }
