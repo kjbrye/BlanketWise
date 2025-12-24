@@ -316,7 +316,7 @@ function HorseCard({ horse, isActive, onClick }) {
   );
 }
 
-function WeatherBanner({ weather, location }) {
+function WeatherBar({ weather, location }) {
   const conditionIcons = {
     "clear": "☀️",
     "partly-cloudy": "🌤️",
@@ -324,163 +324,107 @@ function WeatherBanner({ weather, location }) {
     "rain": "🌧️",
     "snow": "❄️",
   };
-  
+
   return (
-    <div className="bg-gradient-to-r from-[#B8D4E3] to-[#E8F4F8] rounded-2xl p-6 mb-6 flex items-center justify-between relative overflow-hidden">
-      <div className="absolute -top-20 -right-10 w-48 h-48 bg-white/30 rounded-full blur-2xl" />
-      
-      <div className="flex items-center gap-5 relative z-10">
-        <div className="text-5xl">{conditionIcons[weather.condition] || "🌤️"}</div>
-        <div>
-          <h2 className="font-display text-4xl font-bold text-[#5C4033]">{weather.temp}°F</h2>
-          <p className="text-[#6B5344]">Partly cloudy • Feels like {weather.feelsLike}°F</p>
+    <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-xl mb-6">
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">{conditionIcons[weather.condition] || "🌤️"}</span>
+          <div>
+            <span className="text-2xl font-bold text-[#5C4033]">{weather.temp}°F</span>
+            <span className="text-sm text-[#6B5344] ml-2">Feels like {weather.feelsLike}°F</span>
+          </div>
+        </div>
+        <div className="h-8 w-px bg-[rgba(139,69,19,0.15)]" />
+        <div className="flex items-center gap-4 text-sm text-[#6B5344]">
+          <span>💨 {weather.wind} mph</span>
+          <span>🌧️ {weather.precipChance}%</span>
+          <span>🌙 Low {weather.tonightLow}°F</span>
         </div>
       </div>
-      
-      <div className="flex gap-8 relative z-10">
-        <div className="text-center">
-          <div className="text-2xl mb-1">💨</div>
-          <div className="font-semibold">{weather.wind} mph</div>
-          <div className="text-xs text-[#6B5344]">Wind</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl mb-1">💧</div>
-          <div className="font-semibold">{weather.humidity}%</div>
-          <div className="text-xs text-[#6B5344]">Humidity</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl mb-1">🌧️</div>
-          <div className="font-semibold">{weather.precipChance}%</div>
-          <div className="text-xs text-[#6B5344]">Precip</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl mb-1">🌡️</div>
-          <div className="font-semibold">{weather.tonightLow}°F</div>
-          <div className="text-xs text-[#6B5344]">Tonight Low</div>
-        </div>
-      </div>
-      
-      <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg text-sm relative z-10 hover:shadow-md transition-shadow">
+      <div className="text-sm text-[#6B5344]">
         📍 {location}
-      </button>
+      </div>
     </div>
   );
 }
 
 function RecommendationCard({ recommendation, horse, currentBlanketId, setCurrentBlanketId }) {
   const weightLabels = {
-    none: "No Blanket",
+    none: "No Blanket Needed",
     sheet: "Rain Sheet",
-    light: "Lightweight Blanket",
-    medium: "Medium Weight Blanket",
-    heavy: "Heavy Weight Blanket",
+    light: "Lightweight",
+    medium: "Medium Weight",
+    heavy: "Heavyweight",
   };
-  
+
   const weightColors = {
-    none: "from-[#9CAF88] to-[#7d9470]",
-    sheet: "from-[#A0522D] to-[#8B4513]",
-    light: "from-[#D4A84B] to-[#c49a3d]",
-    medium: "from-[#D4A84B] to-[#E89B3C]",
-    heavy: "from-[#5C4033] to-[#8B4513]",
+    none: "bg-[#9CAF88]",
+    sheet: "bg-[#A0522D]",
+    light: "bg-[#D4A84B]",
+    medium: "bg-[#E89B3C]",
+    heavy: "bg-[#5C4033]",
   };
-  
+
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg border border-[rgba(139,69,19,0.15)] mb-6">
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${weightColors[recommendation.weightNeeded]} flex items-center justify-center shadow-lg`}>
+    <div className="bg-white rounded-2xl shadow-sm border border-[rgba(139,69,19,0.1)] overflow-hidden">
+      {/* Hero recommendation */}
+      <div className={`${weightColors[recommendation.weightNeeded]} px-8 py-10 text-center text-white`}>
+        <div className="flex justify-center mb-4">
+          <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center">
             <BlanketIcon className="w-12 h-12" />
           </div>
-          <div>
-            <h3 className="font-display text-2xl font-bold text-[#5C4033]">
-              {weightLabels[recommendation.weightNeeded]}
-              {recommendation.needsNeckRug && " + Neck Rug"}
-            </h3>
-            <p className="text-[#6B5344]">
-              {recommendation.gramsNeeded}g fill • {recommendation.needsWaterproof ? "Waterproof" : "Breathable"} turnout
-            </p>
-          </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="bg-[#9CAF88] text-white px-4 py-2 rounded-full font-semibold text-sm">
-            {recommendation.confidence}% Confidence
-          </div>
-          {recommendation.needsNeckRug && (
-            <div className="bg-[#5C4033] text-white px-3 py-1 rounded-full text-xs font-medium">
-              🧣 Neck Rug Recommended
-            </div>
-          )}
-        </div>
+        <h2 className="font-display text-3xl font-bold mb-1">
+          {weightLabels[recommendation.weightNeeded]}
+        </h2>
+        {recommendation.needsNeckRug && (
+          <p className="text-white/90 font-medium">+ Neck Rug</p>
+        )}
+        <p className="text-white/75 text-sm mt-2">
+          for {horse.name} • {recommendation.gramsNeeded}g fill
+          {recommendation.needsWaterproof && " • Waterproof"}
+        </p>
       </div>
-      
-      <div className="bg-[#FDF8F0] rounded-xl p-4 mb-6">
-        <h4 className="font-semibold flex items-center gap-2 mb-2">
-          💡 Why this recommendation?
-        </h4>
-        <p className="text-[#6B5344] leading-relaxed">{recommendation.reasoning}</p>
+
+      {/* Details section */}
+      <div className="p-6">
+        <p className="text-[#6B5344] leading-relaxed mb-6">{recommendation.reasoning}</p>
+
+        {recommendation.recommendedBlanket && (
+          <button
+            onClick={() => setCurrentBlanketId(recommendation.recommendedBlanket.id)}
+            className={`w-full py-3 rounded-xl font-medium transition-colors ${
+              currentBlanketId === recommendation.recommendedBlanket.id
+                ? "bg-[#9CAF88]/15 text-[#6B8E5C] border border-[#9CAF88]"
+                : "bg-[#8B4513] text-white hover:bg-[#5C4033]"
+            }`}
+          >
+            {currentBlanketId === recommendation.recommendedBlanket.id
+              ? `✓ Wearing ${recommendation.recommendedBlanket.name}`
+              : `Use ${recommendation.recommendedBlanket.name}`}
+          </button>
+        )}
       </div>
-      
-      <div className="grid grid-cols-4 gap-3">
-        <div className="bg-[#FDF8F0] rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">🌡️</div>
-          <div className="text-xs text-[#6B5344] mb-1">Feels Like</div>
-          <div className="font-semibold">{recommendation.effectiveTemp}°F</div>
-        </div>
-        <div className="bg-[#FDF8F0] rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">🐴</div>
-          <div className="text-xs text-[#6B5344] mb-1">Coat Level</div>
-          <div className="font-semibold">{horse.coatGrowth < 33 ? "Light" : horse.coatGrowth < 66 ? "Medium" : "Heavy"}</div>
-        </div>
-        <div className="bg-[#FDF8F0] rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">💪</div>
-          <div className="text-xs text-[#6B5344] mb-1">Exercise Today</div>
-          <div className="font-semibold">Light</div>
-        </div>
-        <div className="bg-[#FDF8F0] rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">🏠</div>
-          <div className="text-xs text-[#6B5344] mb-1">Shelter</div>
-          <div className="font-semibold capitalize">{horse.shelterAccess}</div>
-        </div>
-      </div>
-      
-      {recommendation.recommendedBlanket && (
-        <button
-          onClick={() => setCurrentBlanketId(recommendation.recommendedBlanket.id)}
-          className={`w-full mt-4 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
-            currentBlanketId === recommendation.recommendedBlanket.id
-              ? "bg-[#9CAF88]/20 text-[#9CAF88] border-2 border-[#9CAF88]"
-              : "bg-[#8B4513] text-white hover:bg-[#5C4033]"
-          }`}
-        >
-          {currentBlanketId === recommendation.recommendedBlanket.id ? (
-            <>✓ Currently Wearing {recommendation.recommendedBlanket.name}</>
-          ) : (
-            <>Use {recommendation.recommendedBlanket.name}</>
-          )}
-        </button>
-      )}
     </div>
   );
 }
 
 function DailySchedule({ schedule }) {
-  const recLabels = { none: "None", sheet: "Sheet", light: "Light", medium: "Medium", heavy: "Heavy" };
-  
+  const recLabels = { none: "None", sheet: "Sheet", light: "Light", medium: "Med", heavy: "Heavy" };
+
   return (
-    <div className="mb-6">
-      <h2 className="font-display text-xl font-semibold text-[#5C4033] mb-4">Today's Blanket Schedule</h2>
-      <div className="grid grid-cols-4 gap-3">
+    <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] overflow-hidden">
+      <div className="grid grid-cols-4 divide-x divide-[rgba(139,69,19,0.1)]">
         {schedule.map((time, i) => (
-          <div 
+          <div
             key={i}
-            className={`bg-white rounded-xl p-4 text-center border transition-all ${
-              time.current ? 'border-[#D4A84B] shadow-lg shadow-[#D4A84B]/20' : 'border-[rgba(139,69,19,0.15)] hover:shadow-md'
-            }`}
+            className={`py-4 px-3 text-center ${time.current ? 'bg-[#D4A84B]/10' : ''}`}
           >
-            <div className="text-sm text-[#6B5344] mb-2">{time.label}</div>
-            <div className="text-3xl mb-2">{time.icon}</div>
-            <div className="text-xl font-bold text-[#5C4033] mb-2">{time.temp}°F</div>
-            <div className="text-sm font-medium text-[#8B4513] bg-[#8B4513]/10 px-3 py-1 rounded-md inline-block">
+            <div className="text-xs text-[#6B5344] mb-1">{time.label.split(' ')[0]}</div>
+            <div className="text-lg mb-1">{time.icon}</div>
+            <div className="text-sm font-semibold text-[#5C4033]">{time.temp}°F</div>
+            <div className="text-xs text-[#8B4513] font-medium mt-1">
               {recLabels[time.recommendation]}
             </div>
           </div>
@@ -598,148 +542,154 @@ function Dashboard({
   const recommendation = getRecommendation(weather, activeHorse, settings, blankets);
   const schedule = getDailySchedule(weather, activeHorse, settings, blankets);
 
+  const forecast = [
+    { day: "Today", icon: "🌤️", high: 42, low: 28, rec: "Med" },
+    { day: "Thu", icon: "☁️", high: 38, low: 25, rec: "Heavy" },
+    { day: "Fri", icon: "🌧️", high: 45, low: 32, rec: "Med" },
+    { day: "Sat", icon: "❄️", high: 30, low: 18, rec: "Heavy" },
+    { day: "Sun", icon: "☀️", high: 48, low: 30, rec: "Med" },
+    { day: "Mon", icon: "🌤️", high: 52, low: 35, rec: "Light" },
+    { day: "Tue", icon: "☀️", high: 55, low: 38, rec: "None" },
+  ];
+
   return (
-    <>
-      {/* Main Layout */}
-      <div className="grid grid-cols-[1fr_320px] min-h-[calc(100vh-72px)]">
-        {/* Main Content */}
-        <main className="p-6 overflow-y-auto">
-          <WeatherBanner weather={weather} location={location} />
+    <div className="min-h-[calc(100vh-72px)] bg-[#FAF7F2]">
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Weather Bar */}
+        <WeatherBar weather={weather} location={location} />
 
-          {/* Horse Selector */}
-          {horses.length > 1 && (
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-sm text-[#6B5344]">Showing recommendations for:</span>
-              <select
-                value={activeHorseId}
-                onChange={(e) => setActiveHorseId(parseInt(e.target.value))}
-                className="px-4 py-2 rounded-lg border border-[rgba(139,69,19,0.3)] focus:border-[#D4A84B] focus:outline-none bg-white font-medium text-[#5C4033]"
-              >
-                {horses.map(horse => (
-                  <option key={horse.id} value={horse.id}>{horse.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-xl font-semibold text-[#5C4033]">
-              Current Recommendation for {activeHorse.name}
-            </h2>
-            <span className="text-sm text-[#6B5344]">Updated just now</span>
-          </div>
-
-          <RecommendationCard
-            recommendation={recommendation}
-            horse={activeHorse}
-            currentBlanketId={currentBlanketId}
-            setCurrentBlanketId={setCurrentBlanketId}
-          />
-
-          <DailySchedule schedule={schedule} />
-
-          <div>
-            <h2 className="font-display text-xl font-semibold text-[#5C4033] mb-4">7-Day Forecast & Recommendations</h2>
-            <div className="grid grid-cols-7 gap-2">
-              {[
-                { day: "Today", icon: "🌤️", high: 42, low: 28, rec: "Med → Heavy" },
-                { day: "Thu", icon: "☁️", high: 38, low: 25, rec: "Heavy" },
-                { day: "Fri", icon: "🌧️", high: 45, low: 32, rec: "Med WP" },
-                { day: "Sat", icon: "❄️", high: 30, low: 18, rec: "Heavy+" },
-                { day: "Sun", icon: "☀️", high: 48, low: 30, rec: "Medium" },
-                { day: "Mon", icon: "🌤️", high: 52, low: 35, rec: "Light" },
-                { day: "Tue", icon: "☀️", high: 55, low: 38, rec: "Sheet/None" },
-              ].map((day, i) => (
-                <div
-                  key={i}
-                  className={`bg-white rounded-xl p-3 text-center border transition-all ${
-                    i === 0 ? 'border-[#D4A84B] shadow-md' : 'border-[rgba(139,69,19,0.15)] hover:shadow-md'
-                  }`}
-                >
-                  <div className="text-xs text-[#6B5344] mb-1">{day.day}</div>
-                  <div className="text-2xl mb-1">{day.icon}</div>
-                  <div className="text-sm font-bold text-[#5C4033]">{day.high}°/{day.low}°</div>
-                  <div className="text-xs font-medium text-[#8B4513] bg-[#8B4513]/10 px-2 py-0.5 rounded mt-1 inline-block">
-                    {day.rec}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-
-        {/* Right Sidebar */}
-        <aside className="bg-white border-l border-[rgba(139,69,19,0.15)] p-5 overflow-y-auto">
-          <div className="mb-6">
-            <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              Current Blanket
-            </h3>
-            <div className="space-y-2">
-              {blankets.map(blanket => (
-                <BlanketInventoryItem
-                  key={blanket.id}
-                  blanket={blanket}
-                  isInUse={blanket.id === currentBlanketId}
-                  onSelect={() => setCurrentBlanketId(blanket.id)}
-                />
-              ))}
-            </div>
-            <Link
-              to="/inventory"
-              className="block text-center text-sm text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
+        {/* Horse Selector (if multiple) */}
+        {horses.length > 1 && (
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-sm text-[#6B5344]">Recommendations for:</span>
+            <select
+              value={activeHorseId}
+              onChange={(e) => setActiveHorseId(parseInt(e.target.value))}
+              className="px-3 py-1.5 rounded-lg border border-[rgba(139,69,19,0.2)] focus:border-[#D4A84B] focus:outline-none bg-white text-sm font-medium text-[#5C4033]"
             >
-              Manage Inventory →
-            </Link>
+              {horses.map(horse => (
+                <option key={horse.id} value={horse.id}>{horse.name}</option>
+              ))}
+            </select>
           </div>
+        )}
 
-          <div className="mb-6">
-            <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              Quick Actions
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <QuickAction icon="📝" label="Log Blanket Change" />
-              <QuickAction icon="🏋️" label="Log Exercise" />
-              <QuickAction icon="📊" label="View History" />
-              <QuickAction icon="🔔" label="Set Alert" />
+        {/* Main Grid */}
+        <div className="grid grid-cols-[1fr_280px] gap-6">
+          {/* Left Column - Primary Content */}
+          <div className="space-y-6">
+            {/* Recommendation Card */}
+            <RecommendationCard
+              recommendation={recommendation}
+              horse={activeHorse}
+              currentBlanketId={currentBlanketId}
+              setCurrentBlanketId={setCurrentBlanketId}
+            />
+
+            {/* Today's Schedule */}
+            <div>
+              <h3 className="text-sm font-medium text-[#6B5344] mb-3">Today's Schedule</h3>
+              <DailySchedule schedule={schedule} />
+            </div>
+
+            {/* 7-Day Forecast */}
+            <div>
+              <h3 className="text-sm font-medium text-[#6B5344] mb-3">7-Day Outlook</h3>
+              <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] overflow-hidden">
+                <div className="grid grid-cols-7 divide-x divide-[rgba(139,69,19,0.1)]">
+                  {forecast.map((day, i) => (
+                    <div
+                      key={i}
+                      className={`py-3 px-2 text-center ${i === 0 ? 'bg-[#D4A84B]/10' : ''}`}
+                    >
+                      <div className="text-xs text-[#6B5344]">{day.day}</div>
+                      <div className="text-lg my-1">{day.icon}</div>
+                      <div className="text-xs font-medium text-[#5C4033]">{day.high}°/{day.low}°</div>
+                      <div className="text-[10px] text-[#8B4513] mt-1">{day.rec}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <WeatherAlert message={
-            <><strong>Saturday:</strong> Significant temperature drop expected (18°F overnight low). Consider having your heavyweight blanket ready.</>
-          } />
+          {/* Right Column - Secondary Content */}
+          <div className="space-y-6">
+            {/* Weather Alert */}
+            <div className="bg-[#FEF3E2] border border-[#E89B3C]/30 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-lg">⚠️</span>
+                <div>
+                  <div className="font-medium text-[#5C4033] text-sm">Saturday</div>
+                  <p className="text-xs text-[#6B5344] mt-1">
+                    Temperature drop to 18°F overnight. Have heavyweight ready.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          {/* Active Horse Summary */}
-          <div className="mt-6">
-            <h3 className="font-display text-base font-semibold text-[#5C4033] mb-4 pb-2 border-b border-[rgba(139,69,19,0.15)]">
-              {activeHorse.name}'s Profile
-            </h3>
-            <div className="bg-[#FDF8F0] rounded-xl p-4">
+            {/* Current Blanket */}
+            <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] p-4">
+              <h3 className="text-sm font-medium text-[#5C4033] mb-3">Blanket Inventory</h3>
+              <div className="space-y-2">
+                {blankets.slice(0, 3).map(blanket => (
+                  <button
+                    key={blanket.id}
+                    onClick={() => setCurrentBlanketId(blanket.id)}
+                    className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
+                      blanket.id === currentBlanketId
+                        ? 'bg-[#9CAF88]/15 border border-[#9CAF88]'
+                        : 'hover:bg-[#FDF8F0]'
+                    }`}
+                  >
+                    <div className="w-2 h-8 rounded" style={{ backgroundColor: blanket.color }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-[#5C4033] truncate">{blanket.name}</div>
+                      <div className="text-xs text-[#6B5344]">{blanket.grams}g</div>
+                    </div>
+                    {blanket.id === currentBlanketId && (
+                      <span className="text-xs text-[#9CAF88]">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <Link
+                to="/inventory"
+                className="block text-center text-xs text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {/* Horse Profile */}
+            <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] p-4">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-2xl">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-lg">
                   🐎
                 </div>
                 <div>
-                  <div className="font-semibold text-[#2C1810]">{activeHorse.name}</div>
-                  <div className="text-sm text-[#6B5344]">{activeHorse.breed}</div>
+                  <div className="font-medium text-[#5C4033]">{activeHorse.name}</div>
+                  <div className="text-xs text-[#6B5344]">{activeHorse.breed} • {activeHorse.age} yrs</div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div><span className="text-[#6B5344]">Age:</span> <span className="font-medium">{activeHorse.age} yrs</span></div>
-                <div><span className="text-[#6B5344]">Coat:</span> <span className="font-medium">{activeHorse.coatGrowth < 33 ? "Light" : activeHorse.coatGrowth < 66 ? "Medium" : "Heavy"}</span></div>
-                <div><span className="text-[#6B5344]">Clipped:</span> <span className="font-medium">{activeHorse.isClipped ? "Yes" : "No"}</span></div>
-                <div><span className="text-[#6B5344]">Senior:</span> <span className="font-medium">{activeHorse.isSenior ? "Yes" : "No"}</span></div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344]">
+                  {activeHorse.coatGrowth < 33 ? "Light" : activeHorse.coatGrowth < 66 ? "Medium" : "Heavy"} coat
+                </span>
+                {activeHorse.isClipped && <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344]">Clipped</span>}
+                {activeHorse.isSenior && <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344]">Senior</span>}
               </div>
               <Link
                 to="/horses"
-                className="block text-center text-sm text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
+                className="block text-center text-xs text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"
               >
-                Edit Profile →
+                Edit profile →
               </Link>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
