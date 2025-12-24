@@ -527,7 +527,6 @@ function Navigation({ location: userLocation }) {
     { label: "Dashboard", path: "/" },
     { label: "My Horses", path: "/horses" },
     { label: "Blanket Inventory", path: "/inventory" },
-    { label: "Weather History", path: "/weather" },
     { label: "Settings", path: "/settings" },
   ];
 
