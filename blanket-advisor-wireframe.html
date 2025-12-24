@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlanketWise - Horse Blanket Advisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --saddle-brown: #8B4513;
+            --warm-leather: #A0522D;
+            --cream: #FDF8F0;
+            --hay-gold: #D4A84B;
+            --stable-wood: #5C4033;
+            --soft-sage: #9CAF88;
+            --frost-blue: #B8D4E3;
+            --warning-amber: #E89B3C;
+            --danger-rust: #C0392B;
+            --text-dark: #2C1810;
+            --text-muted: #6B5344;
+            --border-light: rgba(139, 69, 19, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(212, 168, 75, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(156, 175, 136, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--stable-wood) 0%, var(--saddle-brown) 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(44, 24, 16, 0.15);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--hay-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: -0.02em;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: rgba(253, 248, 240, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--cream);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--hay-gold);
+            border-radius: 1px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--hay-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--stable-wood);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            min-height: calc(100vh - 76px);
+        }
+
+        /* Left Sidebar - Horse Profiles */
+        .sidebar-left {
+            background: white;
+            border-right: 1px solid var(--border-light);
+            padding: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--stable-wood);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .add-btn {
+            width: 28px;
+            height: 28px;
+            background: var(--soft-sage);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .horse-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .horse-card:hover {
+            border-color: var(--hay-gold);
+        }
+
+        .horse-card.active {
+            border-color: var(--saddle-brown);
+            background: white;
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+        }
+
+        .horse-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .horse-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--warm-leather), var(--saddle-brown));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .horse-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .horse-breed {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .horse-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-light);
+        }
+
+        .stat {
+            font-size: 0.8rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .weather-banner {
+            background: linear-gradient(135deg, var(--frost-blue) 0%, #E8F4F8 100%);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .weather-icon {
+            font-size: 3.5rem;
+        }
+
+        .weather-details h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--stable-wood);
+        }
+
+        .weather-details p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .weather-conditions {
+            display: flex;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .condition {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .condition-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .condition-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .condition-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .location-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Recommendation Card */
+        .recommendation-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--stable-wood);
+        }
+
+        .recommendation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(44, 24, 16, 0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        .rec-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .rec-blanket {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .blanket-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--hay-gold) 0%, var(--warning-amber) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 16px rgba(212, 168, 75, 0.3);
+        }
+
+        .blanket-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--stable-wood);
+        }
+
+        .blanket-type {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .confidence-badge {
+            background: var(--soft-sage);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .rec-reasoning {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rec-reasoning h4 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rec-reasoning p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .factors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .factor-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .factor-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .factor-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .factor-value {
+            font-weight: 600;
+        }
+
+        /* Schedule Section */
+        .schedule-section {
+            margin-bottom: 2rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .time-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+        }
+
+        .time-card:hover {
+            box-shadow: 0 4px 16px rgba(44, 24, 16, 0.08);
+        }
+
+        .time-card.current {
+            border-color: var(--hay-gold);
+            box-shadow: 0 4px 16px rgba(212, 168, 75, 0.2);
+        }
+
+        .time-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .time-temp {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stable-wood);
+            margin-bottom: 0.5rem;
+        }
+
+        .time-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-rec {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--saddle-brown);
+            background: rgba(139, 69, 19, 0.08);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            background: white;
+            border-left: 1px solid var(--border-light);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .settings-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .settings-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--stable-wood);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+        }
+
+        .toggle-sublabel {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: #ddd;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--soft-sage);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .toggle.active::after {
+            transform: translateX(22px);
+        }
+
+        .slider-group {
+            margin-bottom: 1rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-label {
+            font-size: 0.9rem;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: var(--saddle-brown);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .slider-fill {
+            position: absolute;
+            height: 100%;
+            background: var(--hay-gold);
+            border-radius: 3px;
+            width: 60%;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 3px solid var(--hay-gold);
+            border-radius: 50%;
+            top: -6px;
+            left: 58%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Blanket Inventory */
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .inventory-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--cream);
+            border-radius: 10px;
+        }
+
+        .inventory-color {
+            width: 12px;
+            height: 36px;
+            border-radius: 4px;
+        }
+
+        .inventory-details {
+            flex: 1;
+        }
+
+        .inventory-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .inventory-weight {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .inventory-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: rgba(156, 175, 136, 0.2);
+            color: var(--soft-sage);
+        }
+
+        .status-in-use {
+            background: rgba(212, 168, 75, 0.2);
+            color: var(--warning-amber);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: white;
+            border-color: var(--hay-gold);
+        }
+
+        .action-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Alerts */
+        .alert-card {
+            background: linear-gradient(135deg, rgba(232, 155, 60, 0.1), rgba(232, 155, 60, 0.05));
+            border: 1px solid rgba(232, 155, 60, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--warning-amber);
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Wireframe Labels */
+        .wireframe-label {
+            position: absolute;
+            background: var(--stable-wood);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        /* Footer annotations */
+        .annotations {
+            background: var(--stable-wood);
+            color: var(--cream);
+            padding: 2rem;
+        }
+
+        .annotations h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .annotation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .annotation-item h4 {
+            color: var(--hay-gold);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .annotation-item p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .annotation-item ul {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-left: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🐴</div>
+            <span class="logo-text">BlanketWise</span>
+        </div>
+        <nav class="nav">
+            <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">My Horses</a>
+            <a href="#" class="nav-link">Blanket Inventory</a>
+            <a href="#" class="nav-link">Weather History</a>
+            <a href="#" class="nav-link">Settings</a>
+        </nav>
+        <div class="user-menu">
+            <span style="color: rgba(253,248,240,0.8); font-size: 0.9rem;">📍 Springfield, MO</span>
+            <div class="user-avatar">KB</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Sidebar: Horse Profiles -->
+        <aside class="sidebar-left">
+            <div class="sidebar-title">
+                My Horses
+                <button class="add-btn">+</button>
+            </div>
+            
+            <div class="horse-card active">
+                <div class="horse-header">
+                    <div class="horse-avatar">🐎</div>
+                    <div>
+                        <div class="horse-name">Tucker</div>
+                        <div class="horse-breed">Cleveland Bay</div>
+                    </div>
+                </div>
+                <div class="horse-stats">
+                    <div class="stat">
+                        <span class="stat-label">Age:</span>
+                        <span class="stat-value">12 yrs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Coat:</span>
+                        <span class="stat-value">Medium</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Body:</span>
+                        <span class="stat-value">Normal</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Clipped:</span>
+                        <span class="stat-value">No</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="horse-card">
+                <div class="horse-header">
+                    <div class="horse-avatar">🐴</div>
+                    <div>
+                        <div class="horse-name">Add New Horse</div>
+                        <div class="horse-breed">Click to create profile</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group" style="margin-top: 2rem;">
+                <div class="settings-title">Horse Settings</div>
+                
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Coat Growth Level</span>
+                        <span class="slider-value">Medium</span>
+                    </div>
+                    <div class="slider">
+                        <div class="slider-fill" style="width: 50%;"></div>
+                        <div class="slider-thumb" style="left: 48%;"></div>
+                    </div>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Cold Tolerance</span>
+                        <span class="slider-value">Normal</span>
+                    </div>
+                    <div class="slider">
+                        <div class="slider-fill" style="width: 50%;"></div>
+                        <div class="slider-thumb" style="left: 48%;"></div>
+                    </div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Body Clipped</div>
+                        <div class="toggle-sublabel">Full or partial clip</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Senior Horse</div>
+                        <div class="toggle-sublabel">Age 20+ years</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Thin/Hard Keeper</div>
+                        <div class="toggle-sublabel">Below ideal weight</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Weather Banner -->
+            <div class="weather-banner">
+                <div class="weather-info">
+                    <div class="weather-icon">🌤️</div>
+                    <div class="weather-details">
+                        <h2>42°F</h2>
+                        <p>Partly cloudy • Feels like 38°F</p>
+                    </div>
+                </div>
+                <div class="weather-conditions">
+                    <div class="condition">
+                        <div class="condition-icon">💨</div>
+                        <div class="condition-value">12 mph</div>
+                        <div class="condition-label">Wind</div>
+                    </div>
+                    <div class="condition">
+                        <div class="condition-icon">💧</div>
+                        <div class="condition-value">65%</div>
+                        <div class="condition-label">Humidity</div>
+                    </div>
+                    <div class="condition">
+                        <div class="condition-icon">🌧️</div>
+                        <div class="condition-value">20%</div>
+                        <div class="condition-label">Precip</div>
+                    </div>
+                    <div class="condition">
+                        <div class="condition-icon">🌡️</div>
+                        <div class="condition-value">28°F</div>
+                        <div class="condition-label">Tonight Low</div>
+                    </div>
+                </div>
+                <div class="location-selector">
+                    📍 Change Location
+                </div>
+            </div>
+
+            <!-- Main Recommendation -->
+            <section class="recommendation-section">
+                <div class="section-header">
+                    <h2 class="section-title">Current Recommendation for Tucker</h2>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Updated 5 min ago</span>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="rec-header">
+                        <div class="rec-blanket">
+                            <div class="blanket-icon">🧥</div>
+                            <div class="blanket-info">
+                                <h3>Medium Weight Blanket</h3>
+                                <p class="blanket-type">150-200g fill • Waterproof turnout</p>
+                            </div>
+                        </div>
+                        <div class="confidence-badge">95% Confidence</div>
+                    </div>
+
+                    <div class="rec-reasoning">
+                        <h4>💡 Why this recommendation?</h4>
+                        <p>With a feels-like temperature of 38°F and moderate wind, Tucker's medium winter coat provides some natural protection, but the wind chill factor warrants a medium-weight blanket. Since he's not clipped and maintains normal body condition, a heavier blanket would risk overheating.</p>
+                    </div>
+
+                    <div class="factors-grid">
+                        <div class="factor-card">
+                            <div class="factor-icon">🌡️</div>
+                            <div class="factor-label">Feels Like</div>
+                            <div class="factor-value">38°F</div>
+                        </div>
+                        <div class="factor-card">
+                            <div class="factor-icon">🐴</div>
+                            <div class="factor-label">Coat Level</div>
+                            <div class="factor-value">Medium</div>
+                        </div>
+                        <div class="factor-card">
+                            <div class="factor-icon">💪</div>
+                            <div class="factor-label">Exercise Today</div>
+                            <div class="factor-value">Light</div>
+                        </div>
+                        <div class="factor-card">
+                            <div class="factor-icon">🏠</div>
+                            <div class="factor-label">Shelter</div>
+                            <div class="factor-value">Run-in</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Daily Schedule -->
+            <section class="schedule-section">
+                <div class="section-header">
+                    <h2 class="section-title">Today's Blanket Schedule</h2>
+                </div>
+
+                <div class="schedule-grid">
+                    <div class="time-card">
+                        <div class="time-label">Morning (6 AM)</div>
+                        <div class="time-icon">🌅</div>
+                        <div class="time-temp">35°F</div>
+                        <div class="time-rec">Medium Weight</div>
+                    </div>
+                    <div class="time-card current">
+                        <div class="time-label">Afternoon (Now)</div>
+                        <div class="time-icon">🌤️</div>
+                        <div class="time-temp">42°F</div>
+                        <div class="time-rec">Medium Weight</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Evening (6 PM)</div>
+                        <div class="time-icon">🌆</div>
+                        <div class="time-temp">36°F</div>
+                        <div class="time-rec">Medium Weight</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Overnight</div>
+                        <div class="time-icon">🌙</div>
+                        <div class="time-temp">28°F</div>
+                        <div class="time-rec">Heavy Weight</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7-Day Forecast -->
+            <section class="schedule-section">
+                <div class="section-header">
+                    <h2 class="section-title">7-Day Forecast & Recommendations</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.75rem;">
+                    <div class="time-card current">
+                        <div class="time-label">Today</div>
+                        <div class="time-icon">🌤️</div>
+                        <div class="time-temp">42°/28°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Med → Heavy</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Thu</div>
+                        <div class="time-icon">☁️</div>
+                        <div class="time-temp">38°/25°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Heavy</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Fri</div>
+                        <div class="time-icon">🌧️</div>
+                        <div class="time-temp">45°/32°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Med WP</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Sat</div>
+                        <div class="time-icon">❄️</div>
+                        <div class="time-temp">30°/18°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Heavy+</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Sun</div>
+                        <div class="time-icon">☀️</div>
+                        <div class="time-temp">48°/30°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Medium</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Mon</div>
+                        <div class="time-icon">🌤️</div>
+                        <div class="time-temp">52°/35°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Light</div>
+                    </div>
+                    <div class="time-card">
+                        <div class="time-label">Tue</div>
+                        <div class="time-icon">☀️</div>
+                        <div class="time-temp">55°/38°</div>
+                        <div class="time-rec" style="font-size: 0.75rem;">Sheet/None</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Sidebar: Settings & Tools -->
+        <aside class="sidebar-right">
+            <div class="settings-group">
+                <div class="settings-title">Recommendation Settings</div>
+                
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Use Feels-Like Temp</div>
+                        <div class="toggle-sublabel">Account for wind chill</div>
+                    </div>
+                    <div class="toggle active"></div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Rain/Precip Priority</div>
+                        <div class="toggle-sublabel">Prioritize waterproofing</div>
+                    </div>
+                    <div class="toggle active"></div>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Exercise Adjustment</div>
+                        <div class="toggle-sublabel">Lighter after work</div>
+                    </div>
+                    <div class="toggle active"></div>
+                </div>
+
+                <div class="slider-group" style="margin-top: 1rem;">
+                    <div class="slider-header">
+                        <span class="slider-label">Temperature Buffer</span>
+                        <span class="slider-value">+5°F</span>
+                    </div>
+                    <div class="slider">
+                        <div class="slider-fill" style="width: 40%;"></div>
+                        <div class="slider-thumb" style="left: 38%;"></div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Blanket earlier/warmer</div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">My Blanket Inventory</div>
+                
+                <div class="inventory-list">
+                    <div class="inventory-item">
+                        <div class="inventory-color" style="background: var(--frost-blue);"></div>
+                        <div class="inventory-details">
+                            <div class="inventory-name">Dover Heavyweight</div>
+                            <div class="inventory-weight">360g fill • Waterproof</div>
+                        </div>
+                        <span class="inventory-status status-available">Available</span>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-color" style="background: var(--hay-gold);"></div>
+                        <div class="inventory-details">
+                            <div class="inventory-name">Rambo Medium</div>
+                            <div class="inventory-weight">200g fill • Waterproof</div>
+                        </div>
+                        <span class="inventory-status status-in-use">In Use</span>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-color" style="background: var(--soft-sage);"></div>
+                        <div class="inventory-details">
+                            <div class="inventory-name">WeatherBeeta Lite</div>
+                            <div class="inventory-weight">100g fill • Breathable</div>
+                        </div>
+                        <span class="inventory-status status-available">Available</span>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-color" style="background: var(--warm-leather);"></div>
+                        <div class="inventory-details">
+                            <div class="inventory-name">Rain Sheet</div>
+                            <div class="inventory-weight">0g fill • Waterproof</div>
+                        </div>
+                        <span class="inventory-status status-available">Available</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">Quick Actions</div>
+                <div class="quick-actions">
+                    <div class="action-btn">
+                        <div class="action-icon">📝</div>
+                        <div class="action-label">Log Blanket Change</div>
+                    </div>
+                    <div class="action-btn">
+                        <div class="action-icon">🏋️</div>
+                        <div class="action-label">Log Exercise</div>
+                    </div>
+                    <div class="action-btn">
+                        <div class="action-icon">📊</div>
+                        <div class="action-label">View History</div>
+                    </div>
+                    <div class="action-btn">
+                        <div class="action-icon">🔔</div>
+                        <div class="action-label">Set Alert</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-card">
+                <div class="alert-header">
+                    ⚠️ Weather Alert
+                </div>
+                <div class="alert-text">
+                    <strong>Saturday:</strong> Significant temperature drop expected (18°F overnight low). Consider having your heavyweight blanket ready. You may want to add a neck cover.
+                </div>
+            </div>
+
+            <div class="settings-group" style="margin-top: 1.5rem;">
+                <div class="settings-title">Notifications</div>
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Blanket Change Alerts</div>
+                        <div class="toggle-sublabel">When rec changes</div>
+                    </div>
+                    <div class="toggle active"></div>
+                </div>
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Severe Weather</div>
+                        <div class="toggle-sublabel">Storm warnings</div>
+                    </div>
+                    <div class="toggle active"></div>
+                </div>
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Daily Summary</div>
+                        <div class="toggle-sublabel">Morning forecast</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Feature Annotations -->
+    <footer class="annotations">
+        <h3>📋 Wireframe Features & Functionality Overview</h3>
+        <div class="annotation-grid">
+            <div class="annotation-item">
+                <h4>🐴 Horse Profile Management</h4>
+                <ul>
+                    <li>Multiple horse profiles with individual settings</li>
+                    <li>Coat growth tracking (light → heavy winter coat)</li>
+                    <li>Body condition scoring for accurate recommendations</li>
+                    <li>Clipping status (full, partial, trace, none)</li>
+                    <li>Age-based adjustments for seniors</li>
+                    <li>Health considerations (arthritis, Cushing's, etc.)</li>
+                </ul>
+            </div>
+            <div class="annotation-item">
+                <h4>🌡️ Weather Integration</h4>
+                <ul>
+                    <li>Real-time weather data with feels-like temperature</li>
+                    <li>Wind chill and humidity factored in</li>
+                    <li>Precipitation probability and type</li>
+                    <li>Multi-day forecast with daily recommendations</li>
+                    <li>Hourly schedule for blanket changes</li>
+                    <li>Severe weather alerts and notifications</li>
+                </ul>
+            </div>
+            <div class="annotation-item">
+                <h4>🧥 Blanket Inventory</h4>
+                <ul>
+                    <li>Track all owned blankets with fill weights</li>
+                    <li>Mark waterproof/breathable properties</li>
+                    <li>Current status (in use, available, needs repair)</li>
+                    <li>Recommendations from YOUR available blankets</li>
+                    <li>Neck cover and liner compatibility</li>
+                    <li>Maintenance reminders (washing, waterproofing)</li>
+                </ul>
+            </div>
+            <div class="annotation-item">
+                <h4>⚙️ Smart Recommendations</h4>
+                <ul>
+                    <li>AI-driven blanket selection with confidence scores</li>
+                    <li>Plain-language reasoning explanations</li>
+                    <li>Temperature buffer preferences (blanket earlier/later)</li>
+                    <li>Exercise-adjusted recommendations</li>
+                    <li>Shelter access consideration</li>
+                    <li>Transition period guidance (seasonal changes)</li>
+                </ul>
+            </div>
+            <div class="annotation-item">
+                <h4>📱 Notifications & Logging</h4>
+                <ul>
+                    <li>Push alerts when recommendations change</li>
+                    <li>Severe weather warnings</li>
+                    <li>Log blanket changes for pattern tracking</li>
+                    <li>Exercise logging affects same-day recs</li>
+                    <li>Historical data and trend analysis</li>
+                    <li>Exportable logs for vet/barn manager</li>
+                </ul>
+            </div>
+            <div class="annotation-item">
+                <h4>🔮 Future Features</h4>
+                <ul>
+                    <li>Barn/stable sharing for multiple caretakers</li>
+                    <li>Integration with smart barn sensors</li>
+                    <li>Photo logging of coat condition</li>
+                    <li>Community recommendations by breed/region</li>
+                    <li>Shopping recommendations for missing blankets</li>
+                    <li>Calendar integration for scheduled changes</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
