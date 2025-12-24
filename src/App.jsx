@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import MyHorses from './pages/MyHorses';
 import BlanketInventory from './pages/BlanketInventory';
+import Settings from './pages/Settings';
 
 // ============================================
 // BLANKETWISE - HORSE BLANKET ADVISOR
@@ -827,7 +828,7 @@ export default function App() {
   const [currentBlanketId, setCurrentBlanketId] = useState(2);
   const [weather, setWeather] = useState(defaultWeather);
   const [settings, setSettings] = useState(defaultSettings);
-  const [location] = useState("Milwaukee, WI");
+  const [location, setLocation] = useState("Milwaukee, WI");
 
   return (
     <BrowserRouter>
@@ -872,6 +873,17 @@ export default function App() {
                 setBlankets={setBlankets}
                 currentBlanketId={currentBlanketId}
                 setCurrentBlanketId={setCurrentBlanketId}
+              />
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <Settings
+                settings={settings}
+                setSettings={setSettings}
+                location={location}
+                setLocation={setLocation}
               />
             }
           />
