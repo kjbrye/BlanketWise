@@ -349,6 +349,145 @@ export default function Settings({ settings, setSettings, location, setLocation 
         </SettingRow>
       </SettingsSection>
 
+      {/* Blanketing Guide */}
+      <SettingsSection
+        title="Blanketing Guide"
+        description="How recommendations are calculated"
+      >
+        {/* Base Thresholds */}
+        <div className="mb-6">
+          <h4 className="font-medium text-[#5C4033] mb-3">Base Temperature Thresholds</h4>
+          <p className="text-sm text-[#6B5344] mb-3">
+            For a horse with a natural winter coat, acclimated to midwest weather:
+          </p>
+          <div className="bg-[#FDF8F0] rounded-xl p-4">
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+                <span className="text-[#6B5344]">No blanket</span>
+                <span className="font-medium text-[#5C4033]">Above 40°F</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+                <span className="text-[#6B5344]">Rain sheet</span>
+                <span className="font-medium text-[#5C4033]">Rain expected</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+                <span className="text-[#6B5344]">Lightweight</span>
+                <span className="font-medium text-[#5C4033]">30–40°F</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+                <span className="text-[#6B5344]">Medium weight</span>
+                <span className="font-medium text-[#5C4033]">15–30°F</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-[rgba(139,69,19,0.1)]">
+                <span className="text-[#6B5344]">Heavyweight</span>
+                <span className="font-medium text-[#5C4033]">Below 15°F</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-[#6B5344]">+ Neck rug</span>
+                <span className="font-medium text-[#5C4033]">Below 10°F or wind &gt;20mph</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Horse Profile Modifiers */}
+        <div className="mb-6">
+          <h4 className="font-medium text-[#5C4033] mb-3">Horse Profile Modifiers</h4>
+          <p className="text-sm text-[#6B5344] mb-3">
+            These adjust thresholds based on your horse's profile. Positive values mean blankets are recommended at warmer temperatures.
+          </p>
+          <div className="space-y-3">
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">✂️</span>
+                <div>
+                  <div className="font-medium text-[#5C4033]">Clipped</div>
+                  <div className="text-sm text-[#6B5344]">+15°F to all thresholds</div>
+                  <div className="text-xs text-[#6B5344] mt-1">
+                    Clipped horses lose significant natural insulation and need blankets much sooner.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">👴</span>
+                <div>
+                  <div className="font-medium text-[#5C4033]">Senior Horse (20+ years)</div>
+                  <div className="text-sm text-[#6B5344]">+5°F to all thresholds</div>
+                  <div className="text-xs text-[#6B5344] mt-1">
+                    Older horses may have reduced ability to regulate body temperature.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🦴</span>
+                <div>
+                  <div className="font-medium text-[#5C4033]">Thin/Hard Keeper</div>
+                  <div className="text-sm text-[#6B5344]">+8°F to all thresholds</div>
+                  <div className="text-xs text-[#6B5344] mt-1">
+                    Horses below ideal weight have less body fat for insulation.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Coat & Tolerance Sliders */}
+        <div className="mb-6">
+          <h4 className="font-medium text-[#5C4033] mb-3">Coat & Tolerance Adjustments</h4>
+          <div className="space-y-3">
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🐴</span>
+                <div>
+                  <div className="font-medium text-[#5C4033]">Coat Growth Level</div>
+                  <div className="text-sm text-[#6B5344]">-5°F to +5°F range</div>
+                  <div className="text-xs text-[#6B5344] mt-1">
+                    Light coat adds up to +5°F (blanket sooner). Heavy coat subtracts up to 5°F (blanket later).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#FDF8F0] rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">❄️</span>
+                <div>
+                  <div className="font-medium text-[#5C4033]">Cold Tolerance</div>
+                  <div className="text-sm text-[#6B5344]">-5°F to +5°F range</div>
+                  <div className="text-xs text-[#6B5344] mt-1">
+                    Sensitive horses add up to +5°F. Hardy horses subtract up to 5°F.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Temperature Buffer */}
+        <div>
+          <h4 className="font-medium text-[#5C4033] mb-3">Temperature Buffer (Settings)</h4>
+          <div className="bg-[#FDF8F0] rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">🎚️</span>
+              <div>
+                <div className="font-medium text-[#5C4033]">User Preference</div>
+                <div className="text-sm text-[#6B5344]">0°F to +15°F (default: 0)</div>
+                <div className="text-xs text-[#6B5344] mt-1">
+                  Add extra degrees if you prefer more conservative (warmer) recommendations. This stacks with all other modifiers.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
+
       {/* About */}
       <SettingsSection title="About">
         <div className="text-center py-4">
