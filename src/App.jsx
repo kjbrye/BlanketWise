@@ -9,6 +9,10 @@ import Settings from './pages/Settings';
 // Redesigned with warm equestrian aesthetic
 // ============================================
 
+// ============================================
+// ICON COMPONENTS
+// ============================================
+
 // Blanket Icon Component
 function BlanketIcon({ className = "w-8 h-8" }) {
   return (
@@ -25,6 +29,124 @@ function BlanketIcon({ className = "w-8 h-8" }) {
     </svg>
   );
 }
+
+// Icon component with all app icons
+function Icon({ name, className = "w-5 h-5" }) {
+  const icons = {
+    // Weather icons
+    sun: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <circle cx="12" cy="12" r="5" />
+        <path strokeLinecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      </svg>
+    ),
+    "partly-cloudy": (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+      </svg>
+    ),
+    cloud: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+      </svg>
+    ),
+    rain: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13a4 4 0 004 4h9a5 5 0 00.5-9.97A5.002 5.002 0 007 7.03 4.001 4.001 0 003 13z" />
+        <path strokeLinecap="round" d="M8 19v2M12 19v2M16 19v2" />
+      </svg>
+    ),
+    snow: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
+      </svg>
+    ),
+    wind: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+      </svg>
+    ),
+    moon: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    ),
+    sunrise: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+        <path strokeLinecap="round" d="M12 8a4 4 0 00-4 4h8a4 4 0 00-4-4z" />
+        <path strokeLinecap="round" d="M3 17h18" />
+      </svg>
+    ),
+    sunset: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+        <path strokeLinecap="round" d="M8 12a4 4 0 018 0" />
+        <path strokeLinecap="round" d="M3 17h18" />
+      </svg>
+    ),
+    // Location & Navigation
+    "map-pin": (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+    // UI Actions
+    check: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+    warning: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    ),
+    // Horse icon
+    horse: (
+      <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 8V6c0-1.1-.9-2-2-2h-1c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2H9c0-1.1-.9-2-2-2H5C3.9 2 3 2.9 3 4v2c0 1.1.9 2 2 2h.5c.8 0 1.5.7 1.5 1.5S6.3 11 5.5 11H4v2h1.5c1.9 0 3.5-1.6 3.5-3.5 0-.5-.1-1-.3-1.5h6.6c-.2.5-.3 1-.3 1.5 0 1.9 1.6 3.5 3.5 3.5H20v-2h-1.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h.5c1.1 0 2-.9 2-2zM9.5 7h5c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-5c-.3 0-.5.2-.5.5s.2.5.5.5z"/>
+        <path d="M18 14h-3l-2 4-2-4H8l-3 6v2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1h6v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-2l-1-6z"/>
+      </svg>
+    ),
+    thermometer: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19c0 1.1.9 2 2 2s2-.9 2-2h-4zM12 3a2 2 0 00-2 2v8.26a4 4 0 102.5 6.74h.01A4 4 0 0014 13.26V5a2 2 0 00-2-2z" />
+      </svg>
+    ),
+    droplet: (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.418 0-8-3.134-8-7 0-4.418 8-12 8-12s8 7.582 8 12c0 3.866-3.582 7-8 7z" />
+      </svg>
+    ),
+  };
+
+  return icons[name] || null;
+}
+
+// Weather condition icons mapping
+const WeatherIcon = ({ condition, className = "w-6 h-6" }) => {
+  const iconMap = {
+    "clear": "sun",
+    "partly-cloudy": "partly-cloudy",
+    "cloudy": "cloud",
+    "rain": "rain",
+    "snow": "snow",
+  };
+  return <Icon name={iconMap[condition] || "partly-cloudy"} className={className} />;
+};
+
+// Schedule time icons
+const ScheduleIcon = ({ time, className = "w-5 h-5" }) => {
+  const iconMap = {
+    "morning": "sunrise",
+    "afternoon": "sun",
+    "evening": "sunset",
+    "overnight": "moon",
+  };
+  return <Icon name={iconMap[time] || "sun"} className={className} />;
+};
 
 // Default data
 const defaultHorse = {
@@ -226,10 +348,10 @@ function generateReasoning(weather, horse, settings, weight, effectiveTemp, need
 
 function getDailySchedule(weather, horse, settings, blankets) {
   const times = [
-    { label: "Morning (6 AM)", icon: "🌅", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2 },
-    { label: "Afternoon (Now)", icon: "🌤️", temp: weather.temp, feelsLike: weather.feelsLike, current: true },
-    { label: "Evening (6 PM)", icon: "🌆", temp: weather.temp - 6, feelsLike: weather.feelsLike - 8 },
-    { label: "Overnight", icon: "🌙", temp: weather.tonightLow, feelsLike: weather.tonightLow - 4 },
+    { label: "Morning (6 AM)", iconType: "morning", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2 },
+    { label: "Afternoon (Now)", iconType: "afternoon", temp: weather.temp, feelsLike: weather.feelsLike, current: true },
+    { label: "Evening (6 PM)", iconType: "evening", temp: weather.temp - 6, feelsLike: weather.feelsLike - 8 },
+    { label: "Overnight", iconType: "overnight", temp: weather.tonightLow, feelsLike: weather.tonightLow - 4 },
   ];
   
   return times.map(time => {
@@ -275,19 +397,19 @@ function Slider({ value, onChange, label, valueLabel }) {
 
 function HorseCard({ horse, isActive, onClick }) {
   const coatLevel = horse.coatGrowth < 33 ? "Light" : horse.coatGrowth < 66 ? "Medium" : "Heavy";
-  
+
   return (
     <button
       onClick={onClick}
       className={`w-full text-left p-4 rounded-xl mb-3 transition-all border-2 ${
-        isActive 
-          ? 'border-[#8B4513] bg-white shadow-lg' 
+        isActive
+          ? 'border-[#8B4513] bg-white shadow-lg'
           : 'border-transparent bg-[#FDF8F0] hover:border-[#D4A84B]'
       }`}
     >
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-2xl">
-          🐎
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-white">
+          <Icon name="horse" className="w-7 h-7" />
         </div>
         <div>
           <div className="font-semibold text-[#2C1810]">{horse.name}</div>
@@ -317,19 +439,13 @@ function HorseCard({ horse, isActive, onClick }) {
 }
 
 function WeatherBar({ weather, location }) {
-  const conditionIcons = {
-    "clear": "☀️",
-    "partly-cloudy": "🌤️",
-    "cloudy": "☁️",
-    "rain": "🌧️",
-    "snow": "❄️",
-  };
-
   return (
     <div className="flex items-center justify-between py-3 px-4 bg-white/60 rounded-xl mb-6">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">{conditionIcons[weather.condition] || "🌤️"}</span>
+          <span className="text-[#5C4033]">
+            <WeatherIcon condition={weather.condition} className="w-7 h-7" />
+          </span>
           <div>
             <span className="text-2xl font-bold text-[#5C4033]">{weather.temp}°F</span>
             <span className="text-sm text-[#6B5344] ml-2">Feels like {weather.feelsLike}°F</span>
@@ -337,13 +453,19 @@ function WeatherBar({ weather, location }) {
         </div>
         <div className="h-8 w-px bg-[rgba(139,69,19,0.15)]" />
         <div className="flex items-center gap-4 text-sm text-[#6B5344]">
-          <span>💨 {weather.wind} mph</span>
-          <span>🌧️ {weather.precipChance}%</span>
-          <span>🌙 Low {weather.tonightLow}°F</span>
+          <span className="flex items-center gap-1">
+            <Icon name="wind" className="w-4 h-4" /> {weather.wind} mph
+          </span>
+          <span className="flex items-center gap-1">
+            <Icon name="droplet" className="w-4 h-4" /> {weather.precipChance}%
+          </span>
+          <span className="flex items-center gap-1">
+            <Icon name="moon" className="w-4 h-4" /> Low {weather.tonightLow}°F
+          </span>
         </div>
       </div>
-      <div className="text-sm text-[#6B5344]">
-        📍 {location}
+      <div className="flex items-center gap-1 text-sm text-[#6B5344]">
+        <Icon name="map-pin" className="w-4 h-4" /> {location}
       </div>
     </div>
   );
@@ -401,7 +523,7 @@ function RecommendationCard({ recommendation, horse, currentBlanketId, setCurren
             }`}
           >
             {currentBlanketId === recommendation.recommendedBlanket.id
-              ? `✓ Wearing ${recommendation.recommendedBlanket.name}`
+              ? <span className="flex items-center justify-center gap-2"><Icon name="check" className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}</span>
               : `Use ${recommendation.recommendedBlanket.name}`}
           </button>
         )}
@@ -422,7 +544,9 @@ function DailySchedule({ schedule }) {
             className={`py-4 px-3 text-center ${time.current ? 'bg-[#D4A84B]/10' : ''}`}
           >
             <div className="text-xs text-[#6B5344] mb-1">{time.label.split(' ')[0]}</div>
-            <div className="text-lg mb-1">{time.icon}</div>
+            <div className="flex justify-center text-[#6B5344] mb-1">
+              <ScheduleIcon time={time.iconType} className="w-5 h-5" />
+            </div>
             <div className="text-sm font-semibold text-[#5C4033]">{time.temp}°F</div>
             <div className="text-xs text-[#8B4513] font-medium mt-1">
               {recLabels[time.recommendation]}
@@ -471,7 +595,7 @@ function WeatherAlert({ message }) {
   return (
     <div className="bg-[#E89B3C]/10 border border-[#E89B3C]/30 rounded-xl p-4 mt-4">
       <div className="font-semibold text-[#E89B3C] flex items-center gap-2 mb-2">
-        ⚠️ Weather Alert
+        <Icon name="warning" className="w-5 h-5" /> Weather Alert
       </div>
       <p className="text-sm text-[#2C1810]">{message}</p>
     </div>
@@ -521,7 +645,9 @@ function Navigation({ location: userLocation }) {
       </nav>
 
       <div className="flex items-center gap-4">
-        <span className="text-[#FDF8F0]/80 text-sm">📍 {userLocation}</span>
+        <span className="text-[#FDF8F0]/80 text-sm flex items-center gap-1">
+          <Icon name="map-pin" className="w-4 h-4" /> {userLocation}
+        </span>
         <div className="w-10 h-10 bg-[#D4A84B] rounded-full flex items-center justify-center font-semibold text-[#5C4033]">
           KB
         </div>
@@ -543,13 +669,13 @@ function Dashboard({
   const schedule = getDailySchedule(weather, activeHorse, settings, blankets);
 
   const forecast = [
-    { day: "Today", icon: "🌤️", high: 42, low: 28, rec: "Med" },
-    { day: "Thu", icon: "☁️", high: 38, low: 25, rec: "Heavy" },
-    { day: "Fri", icon: "🌧️", high: 45, low: 32, rec: "Med" },
-    { day: "Sat", icon: "❄️", high: 30, low: 18, rec: "Heavy" },
-    { day: "Sun", icon: "☀️", high: 48, low: 30, rec: "Med" },
-    { day: "Mon", icon: "🌤️", high: 52, low: 35, rec: "Light" },
-    { day: "Tue", icon: "☀️", high: 55, low: 38, rec: "None" },
+    { day: "Today", condition: "partly-cloudy", high: 42, low: 28, rec: "Med" },
+    { day: "Thu", condition: "cloudy", high: 38, low: 25, rec: "Heavy" },
+    { day: "Fri", condition: "rain", high: 45, low: 32, rec: "Med" },
+    { day: "Sat", condition: "snow", high: 30, low: 18, rec: "Heavy" },
+    { day: "Sun", condition: "clear", high: 48, low: 30, rec: "Med" },
+    { day: "Mon", condition: "partly-cloudy", high: 52, low: 35, rec: "Light" },
+    { day: "Tue", condition: "clear", high: 55, low: 38, rec: "None" },
   ];
 
   return (
@@ -603,7 +729,9 @@ function Dashboard({
                       className={`py-3 px-2 text-center ${i === 0 ? 'bg-[#D4A84B]/10' : ''}`}
                     >
                       <div className="text-xs text-[#6B5344]">{day.day}</div>
-                      <div className="text-lg my-1">{day.icon}</div>
+                      <div className="flex justify-center text-[#6B5344] my-1">
+                        <WeatherIcon condition={day.condition} className="w-5 h-5" />
+                      </div>
                       <div className="text-xs font-medium text-[#5C4033]">{day.high}°/{day.low}°</div>
                       <div className="text-[10px] text-[#8B4513] mt-1">{day.rec}</div>
                     </div>
@@ -618,7 +746,9 @@ function Dashboard({
             {/* Weather Alert */}
             <div className="bg-[#FEF3E2] border border-[#E89B3C]/30 rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <span className="text-lg">⚠️</span>
+                <span className="text-[#E89B3C]">
+                  <Icon name="warning" className="w-5 h-5" />
+                </span>
                 <div>
                   <div className="font-medium text-[#5C4033] text-sm">Saturday</div>
                   <p className="text-xs text-[#6B5344] mt-1">
@@ -648,7 +778,9 @@ function Dashboard({
                       <div className="text-xs text-[#6B5344]">{blanket.grams}g</div>
                     </div>
                     {blanket.id === currentBlanketId && (
-                      <span className="text-xs text-[#9CAF88]">✓</span>
+                      <span className="text-[#9CAF88]">
+                        <Icon name="check" className="w-4 h-4" />
+                      </span>
                     )}
                   </button>
                 ))}
@@ -664,8 +796,8 @@ function Dashboard({
             {/* Horse Profile */}
             <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] p-4">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-lg">
-                  🐎
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-white">
+                  <Icon name="horse" className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">{activeHorse.name}</div>
