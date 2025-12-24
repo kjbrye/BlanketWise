@@ -224,37 +224,71 @@ function getRecommendation(weather, horse, settings, blankets) {
 
 function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug) {
   const parts = [];
-
-  if (settings.useFeelsLike && weather.feelsLike !== weather.temp) {
-    parts.push(`With a feels-like temperature of ${effectiveTemp}°F`);
-  } else {
-    parts.push(`At ${effectiveTemp}°F`);
-  }
-
-  if (weather.wind > 10) {
-    parts.push(`and ${weather.wind} mph winds`);
-  }
-
   const coatLevel = horse.coatGrowth < 33 ? "light" : horse.coatGrowth < 66 ? "medium" : "heavy";
-  parts.push(`${horse.name}'s ${coatLevel} winter coat provides ${coatLevel === "heavy" ? "good" : coatLevel === "medium" ? "moderate" : "minimal"} natural protection`);
+  const coatProtection = coatLevel === "heavy" ? "excellent" : coatLevel === "medium" ? "moderate" : "minimal";
 
-  if (horse.isClipped) {
-    parts.push("Since clipped, extra insulation is needed");
+  // Weather-specific recommendation based on weight needed
+  if (weight === "none") {
+    if (effectiveTemp >= 60) {
+      parts.push(`At ${effectiveTemp}°F, it's warm enough that ${horse.name} will be comfortable without a blanket`);
+    } else if (effectiveTemp >= 50) {
+      parts.push(`The mild ${effectiveTemp}°F temperature is comfortable for ${horse.name}'s ${coatLevel} coat`);
+    } else {
+      parts.push(`At ${effectiveTemp}°F, ${horse.name}'s ${coatLevel} winter coat provides ${coatProtection} natural insulation`);
+    }
+  } else if (weight === "sheet") {
+    if (weather.precipChance > 40) {
+      parts.push(`With ${weather.precipChance}% chance of precipitation, a rain sheet will keep ${horse.name} dry`);
+    } else {
+      parts.push(`A light sheet will provide just enough coverage for ${horse.name} in these conditions`);
+    }
+  } else if (weight === "light") {
+    parts.push(`At ${effectiveTemp}°F, a lightweight blanket will supplement ${horse.name}'s natural coat`);
+    if (weather.wind > 10) {
+      parts.push(`The ${weather.wind} mph winds make the extra layer helpful`);
+    }
+  } else if (weight === "medium") {
+    parts.push(`The ${effectiveTemp}°F temperature calls for medium-weight coverage`);
+    if (coatLevel === "light" || horse.isClipped) {
+      parts.push(`${horse.name}'s ${horse.isClipped ? "clipped coat" : "lighter coat"} needs the extra insulation`);
+    } else if (weather.wind > 15) {
+      parts.push(`Wind at ${weather.wind} mph makes it feel colder`);
+    }
+  } else if (weight === "heavy") {
+    if (effectiveTemp < 10) {
+      parts.push(`With temperatures at ${effectiveTemp}°F, heavyweight protection is essential for ${horse.name}`);
+    } else {
+      parts.push(`The cold ${effectiveTemp}°F conditions require heavyweight blanketing`);
+    }
+    if (weather.wind > 15) {
+      parts.push(`Strong ${weather.wind} mph winds increase the chill factor`);
+    }
+  }
+
+  // Add modifiers for special horse conditions
+  if (horse.isClipped && weight !== "none" && weight !== "sheet") {
+    parts.push("Clipped horses need extra warmth to compensate for reduced natural insulation");
   }
 
   if (horse.isSenior) {
-    parts.push("As a senior, slightly warmer coverage helps");
+    parts.push("As a senior, staying warm helps maintain comfort and health");
   }
 
-  if (horse.isThinKeeper) {
-    parts.push("Being a hard keeper, extra warmth is beneficial");
+  if (horse.isThinKeeper && weight !== "none") {
+    parts.push("Extra coverage helps hard keepers conserve body heat");
   }
 
+  // Waterproof note if raining
+  if (weather.precipChance > 30 && settings.rainPriority && weight !== "none") {
+    parts.push("Make sure to use a waterproof option with rain in the forecast");
+  }
+
+  // Neck rug recommendation
   if (needsNeckRug) {
     if (weather.wind > 20) {
-      parts.push("Strong winds call for a neck rug");
+      parts.push("Add a neck rug for protection against the strong winds");
     } else {
-      parts.push("Frigid temperatures warrant a neck rug");
+      parts.push("A neck rug will provide extra warmth in these frigid temperatures");
     }
   }
 
