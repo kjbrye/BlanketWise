@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import MyHorses from './pages/MyHorses';
 
 // ============================================
 // BLANKETWISE - HORSE BLANKET ADVISOR
@@ -497,64 +499,82 @@ function WeatherAlert({ message }) {
 }
 
 // ============================================
-// MAIN APP
+// NAVIGATION COMPONENT
 // ============================================
-export default function App() {
-  const [horses, setHorses] = useState([defaultHorse]);
-  const [activeHorseId, setActiveHorseId] = useState(1);
-  const [blankets, setBlankets] = useState(defaultBlankets);
-  const [currentBlanketId, setCurrentBlanketId] = useState(2);
-  const [weather, setWeather] = useState(defaultWeather);
-  const [settings, setSettings] = useState(defaultSettings);
-  const [location] = useState("Milwaukee, WI");
-  
+function Navigation({ location: userLocation }) {
+  const routerLocation = useLocation();
+
+  const navItems = [
+    { label: "Dashboard", path: "/" },
+    { label: "My Horses", path: "/horses" },
+    { label: "Blanket Inventory", path: "/inventory" },
+    { label: "Weather History", path: "/weather" },
+    { label: "Settings", path: "/settings" },
+  ];
+
+  return (
+    <header className="bg-gradient-to-r from-[#5C4033] to-[#8B4513] px-6 py-4 flex items-center justify-between shadow-lg">
+      <Link to="/" className="flex items-center gap-3">
+        <div className="w-11 h-11 bg-[#D4A84B] rounded-full flex items-center justify-center">
+          <BlanketIcon className="w-7 h-7" />
+        </div>
+        <span className="font-display text-2xl font-bold text-[#FDF8F0] tracking-tight">BlanketWise</span>
+      </Link>
+
+      <nav className="flex gap-8">
+        {navItems.map((item) => {
+          const isActive = routerLocation.pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`text-sm font-medium relative transition-colors ${
+                isActive
+                  ? 'text-[#FDF8F0] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#D4A84B] after:rounded'
+                  : 'text-[#FDF8F0]/80 hover:text-[#FDF8F0]'
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="flex items-center gap-4">
+        <span className="text-[#FDF8F0]/80 text-sm">📍 {userLocation}</span>
+        <div className="w-10 h-10 bg-[#D4A84B] rounded-full flex items-center justify-center font-semibold text-[#5C4033]">
+          KB
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ============================================
+// DASHBOARD COMPONENT
+// ============================================
+function Dashboard({
+  horses, setHorses, activeHorseId, setActiveHorseId,
+  blankets, currentBlanketId, setCurrentBlanketId,
+  weather, settings, setSettings, location
+}) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
   const recommendation = getRecommendation(weather, activeHorse, settings, blankets);
   const schedule = getDailySchedule(weather, activeHorse, settings, blankets);
-  
+
   const updateHorse = (updates) => {
     setHorses(horses.map(h => h.id === activeHorseId ? { ...h, ...updates } : h));
   };
-  
+
   const updateSettings = (key, value) => {
     setSettings({ ...settings, [key]: value });
   };
-  
+
   const coatLabel = activeHorse.coatGrowth < 33 ? "Light" : activeHorse.coatGrowth < 66 ? "Medium" : "Heavy";
   const toleranceLabel = activeHorse.coldTolerance < 33 ? "Sensitive" : activeHorse.coldTolerance < 66 ? "Normal" : "Hardy";
 
   return (
-    <div className="min-h-screen bg-[#FDF8F0]">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-[#5C4033] to-[#8B4513] px-6 py-4 flex items-center justify-between shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-[#D4A84B] rounded-full flex items-center justify-center">
-            <BlanketIcon className="w-7 h-7" />
-          </div>
-          <span className="font-display text-2xl font-bold text-[#FDF8F0] tracking-tight">BlanketWise</span>
-        </div>
-        
-        <nav className="flex gap-8">
-          {["Dashboard", "My Horses", "Blanket Inventory", "Weather History", "Settings"].map((item, i) => (
-            <a 
-              key={item}
-              href="#" 
-              className={`text-[#FDF8F0]/80 hover:text-[#FDF8F0] transition-colors text-sm font-medium relative ${
-                i === 0 ? 'text-[#FDF8F0] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#D4A84B] after:rounded' : ''
-              }`}
-            >
-              {item}
-            </a>
-          ))}
-        </nav>
-        
-        <div className="flex items-center gap-4">
-          <span className="text-[#FDF8F0]/80 text-sm">📍 {location}</span>
-          <div className="w-10 h-10 bg-[#D4A84B] rounded-full flex items-center justify-center font-semibold text-[#5C4033]">
-            KB
-          </div>
-        </div>
-      </header>
+    <>
       
       {/* Main Layout */}
       <div className="grid grid-cols-[280px_1fr_320px] min-h-[calc(100vh-72px)]">
@@ -792,18 +812,71 @@ export default function App() {
           </div>
         </aside>
       </div>
-      
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
-        
-        body {
-          font-family: 'Source Sans 3', sans-serif;
-        }
-        
-        .font-display {
-          font-family: 'Playfair Display', serif;
-        }
-      `}</style>
-    </div>
+    </>
+  );
+}
+
+// ============================================
+// MAIN APP
+// ============================================
+export default function App() {
+  const [horses, setHorses] = useState([defaultHorse]);
+  const [activeHorseId, setActiveHorseId] = useState(1);
+  const [blankets, setBlankets] = useState(defaultBlankets);
+  const [currentBlanketId, setCurrentBlanketId] = useState(2);
+  const [weather, setWeather] = useState(defaultWeather);
+  const [settings, setSettings] = useState(defaultSettings);
+  const [location] = useState("Milwaukee, WI");
+
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-[#FDF8F0]">
+        <Navigation location={location} />
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Dashboard
+                horses={horses}
+                setHorses={setHorses}
+                activeHorseId={activeHorseId}
+                setActiveHorseId={setActiveHorseId}
+                blankets={blankets}
+                currentBlanketId={currentBlanketId}
+                setCurrentBlanketId={setCurrentBlanketId}
+                weather={weather}
+                settings={settings}
+                setSettings={setSettings}
+                location={location}
+              />
+            }
+          />
+          <Route
+            path="/horses"
+            element={
+              <MyHorses
+                horses={horses}
+                setHorses={setHorses}
+                activeHorseId={activeHorseId}
+                setActiveHorseId={setActiveHorseId}
+              />
+            }
+          />
+        </Routes>
+
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+
+          body {
+            font-family: 'Source Sans 3', sans-serif;
+          }
+
+          .font-display {
+            font-family: 'Playfair Display', serif;
+          }
+        `}</style>
+      </div>
+    </BrowserRouter>
   );
 }
