@@ -1,151 +1,59 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import {
+  Sun, Cloud, CloudRain, Snowflake, Wind, Moon, Sunrise, Sunset,
+  MapPin, Check, AlertTriangle, Droplet
+} from 'lucide-react';
 import MyHorses from './pages/MyHorses';
 import BlanketInventory from './pages/BlanketInventory';
 import Settings from './pages/Settings';
 
 // ============================================
 // BLANKETWISE - HORSE BLANKET ADVISOR
-// Redesigned with warm equestrian aesthetic
 // ============================================
 
-// ============================================
-// ICON COMPONENTS
-// ============================================
-
-// Blanket Icon Component
+// Custom icons not available in lucide-react
 function BlanketIcon({ className = "w-8 h-8" }) {
   return (
     <svg className={className} viewBox="0 0 283.5 283.5" fill="none" preserveAspectRatio="xMidYMid meet">
       <path fill="#253957" d="M 262.8125 196.472656 C 258.90625 202.710938 216.382812 195.386719 182.480469 202.277344 C 148.578125 209.164062 33.691406 214.589844 27.234375 202.277344 C 21.269531 190.9375 28.265625 159.152344 24.25 146.566406 C 23.925781 145.484375 23.4375 144.507812 22.949219 143.746094 C 16.277344 134.039062 72.582031 69.054688 72.582031 69.054688 C 72.582031 69.054688 76.648438 69.488281 82.507812 72.199219 C 87.011719 74.316406 92.542969 77.789062 98.078125 83.484375 C 110.824219 96.664062 141.253906 98.617188 172.335938 89.722656 C 203.417969 80.824219 237.753906 86.898438 252.234375 105.941406 C 266.71875 124.980469 266.71875 190.179688 262.8125 196.472656 Z" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#253957" d="M 249.632812 107.945312 C 255.328125 115.433594 259.503906 132.84375 261.132812 155.734375 C 262.597656 176.402344 261.238281 191.914062 260.101562 194.574219 C 259.777344 194.734375 258.746094 195.222656 255.707031 195.550781 C 253.15625 195.820312 249.847656 195.929688 244.914062 195.929688 C 242.09375 195.929688 238.945312 195.875 235.636719 195.875 C 231.839844 195.820312 227.878906 195.765625 223.703125 195.765625 C 211.714844 195.765625 196.148438 196.144531 181.828125 199.074219 C 162.136719 203.089844 117.0625 206.34375 81.316406 206.34375 C 34.882812 206.34375 30.273438 201.027344 30.054688 200.703125 C 27.234375 195.332031 27.832031 183.074219 28.375 172.277344 C 28.863281 161.808594 29.351562 151.882812 27.289062 145.539062" fillOpacity="1" fillRule="nonzero"/>
       <path fill="#8b9ab1" d="M 81.371094 207.15625 C 36.128906 207.15625 30.21875 202.222656 29.511719 201.191406 C 29.511719 201.136719 29.457031 201.136719 29.457031 201.082031 C 26.53125 195.550781 27.125 183.183594 27.667969 172.277344 C 28.15625 161.863281 28.644531 151.992188 26.636719 145.808594 C 26.53125 145.429688 26.746094 144.996094 27.125 144.832031 C 27.503906 144.722656 27.941406 144.941406 28.101562 145.320312 C 30.164062 151.773438 29.730469 161.757812 29.1875 172.277344 C 28.699219 182.964844 28.101562 195.0625 30.761719 200.269531 C 31.195312 200.703125 36.835938 205.585938 81.371094 205.585938 C 117.0625 205.585938 162.082031 202.328125 181.71875 198.316406 C 196.148438 195.386719 211.769531 195.007812 223.757812 195.007812 C 227.933594 195.007812 231.894531 195.0625 235.691406 195.117188 L 235.855469 195.117188 C 239.054688 195.167969 242.144531 195.167969 244.914062 195.167969 C 249.792969 195.167969 253.105469 195.0625 255.597656 194.789062 C 257.984375 194.519531 259.070312 194.195312 259.503906 194.03125 C 260.589844 190.832031 261.78125 175.640625 260.371094 155.789062 C 258.800781 133.0625 254.675781 115.757812 249.035156 108.378906 C 248.765625 108.054688 248.820312 107.566406 249.199219 107.296875 C 249.523438 107.023438 250.011719 107.132812 250.28125 107.457031 C 256.085938 115.050781 260.316406 132.628906 261.945312 155.679688 C 263.410156 176.617188 262.054688 192.132812 260.859375 194.898438 C 260.804688 195.0625 260.699219 195.167969 260.535156 195.277344 C 260.101562 195.550781 258.851562 196.039062 255.816406 196.363281 C 253.265625 196.632812 249.902344 196.742188 244.96875 196.742188 C 242.144531 196.742188 239.109375 196.6875 235.910156 196.6875 L 235.746094 196.6875 C 231.949219 196.632812 227.988281 196.582031 223.8125 196.582031 C 211.878906 196.582031 196.363281 196.960938 182.046875 199.890625 C 162.246094 203.902344 117.117188 207.15625 81.371094 207.15625 Z" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#253957" d="M 82.507812 72.253906 C 81.152344 85 68.894531 104.148438 52.511719 125.035156 C 36.726562 145.15625 29.621094 147.109375 24.25 146.621094" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#8b9ab1" d="M 25.445312 147.4375 C 25.011719 147.4375 24.578125 147.4375 24.195312 147.382812 C 23.761719 147.328125 23.492188 147 23.492188 146.566406 C 23.546875 146.132812 23.871094 145.863281 24.304688 145.863281 C 29.621094 146.296875 36.617188 144.019531 51.914062 124.546875 C 70.847656 100.40625 80.609375 83.265625 81.75 72.199219 C 81.804688 71.765625 82.183594 71.496094 82.5625 71.550781 C 82.996094 71.605469 83.269531 71.984375 83.214844 72.363281 C 82.019531 83.753906 72.148438 101.167969 53.054688 125.519531 C 38.515625 144.074219 31.03125 147.4375 25.445312 147.4375 Z" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#253957" d="M 72.960938 69.269531 C 72.472656 73.554688 69.597656 78.765625 65.476562 85.925781 C 59.835938 95.632812 40.253906 125.414062 22.40625 141.46875" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#8b9ab1" d="M 22.40625 142.226562 C 22.191406 142.226562 21.972656 142.121094 21.863281 141.957031 C 21.59375 141.632812 21.59375 141.144531 21.917969 140.871094 C 40.6875 124.058594 60.539062 92.921875 64.878906 85.488281 C 68.894531 78.546875 71.824219 73.285156 72.257812 69.109375 C 72.3125 68.675781 72.691406 68.402344 73.125 68.457031 C 73.558594 68.511719 73.828125 68.890625 73.773438 69.324219 C 73.289062 73.773438 70.304688 79.144531 66.179688 86.304688 C 59.457031 97.804688 40.089844 126.605469 22.894531 142.066406 C 22.730469 142.175781 22.570312 142.226562 22.40625 142.226562 Z" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#121c2b" d="M 44.484375 162.515625 C 37.648438 162.894531 30.816406 162.785156 23.980469 162.136719 L 23.980469 156.546875 C 30.816406 157.363281 37.648438 157.523438 44.484375 157.035156 C 46.164062 156.929688 49.472656 159.640625 49.472656 159.640625 C 49.472656 159.640625 46.164062 162.40625 44.484375 162.515625 Z" fillOpacity="1" fillRule="nonzero"/>
-      <path fill="#121c2b" d="M 44.484375 177.433594 C 37.648438 177.8125 30.816406 177.703125 23.980469 177.050781 L 23.980469 171.464844 C 30.816406 172.277344 37.648438 172.441406 44.484375 171.953125 C 46.164062 171.84375 49.472656 174.558594 49.472656 174.558594 C 49.472656 174.558594 46.164062 177.324219 44.484375 177.433594 Z" fillOpacity="1" fillRule="nonzero"/>
     </svg>
   );
 }
 
-// Icon component with all app icons
-function Icon({ name, className = "w-5 h-5" }) {
-  const icons = {
-    // Weather icons
-    sun: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <circle cx="12" cy="12" r="5" />
-        <path strokeLinecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-      </svg>
-    ),
-    "partly-cloudy": (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-      </svg>
-    ),
-    cloud: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-      </svg>
-    ),
-    rain: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13a4 4 0 004 4h9a5 5 0 00.5-9.97A5.002 5.002 0 007 7.03 4.001 4.001 0 003 13z" />
-        <path strokeLinecap="round" d="M8 19v2M12 19v2M16 19v2" />
-      </svg>
-    ),
-    snow: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
-      </svg>
-    ),
-    wind: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
-      </svg>
-    ),
-    moon: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    ),
-    sunrise: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-        <path strokeLinecap="round" d="M12 8a4 4 0 00-4 4h8a4 4 0 00-4-4z" />
-        <path strokeLinecap="round" d="M3 17h18" />
-      </svg>
-    ),
-    sunset: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-        <path strokeLinecap="round" d="M8 12a4 4 0 018 0" />
-        <path strokeLinecap="round" d="M3 17h18" />
-      </svg>
-    ),
-    // Location & Navigation
-    "map-pin": (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-    // UI Actions
-    check: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    ),
-    warning: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-    ),
-    // Horse icon
-    horse: (
-      <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-        <path d="M20 8V6c0-1.1-.9-2-2-2h-1c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2H9c0-1.1-.9-2-2-2H5C3.9 2 3 2.9 3 4v2c0 1.1.9 2 2 2h.5c.8 0 1.5.7 1.5 1.5S6.3 11 5.5 11H4v2h1.5c1.9 0 3.5-1.6 3.5-3.5 0-.5-.1-1-.3-1.5h6.6c-.2.5-.3 1-.3 1.5 0 1.9 1.6 3.5 3.5 3.5H20v-2h-1.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h.5c1.1 0 2-.9 2-2zM9.5 7h5c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-5c-.3 0-.5.2-.5.5s.2.5.5.5z"/>
-        <path d="M18 14h-3l-2 4-2-4H8l-3 6v2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1h6v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-2l-1-6z"/>
-      </svg>
-    ),
-    thermometer: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19c0 1.1.9 2 2 2s2-.9 2-2h-4zM12 3a2 2 0 00-2 2v8.26a4 4 0 102.5 6.74h.01A4 4 0 0014 13.26V5a2 2 0 00-2-2z" />
-      </svg>
-    ),
-    droplet: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.418 0-8-3.134-8-7 0-4.418 8-12 8-12s8 7.582 8 12c0 3.866-3.582 7-8 7z" />
-      </svg>
-    ),
-  };
-
-  return icons[name] || null;
+function HorseIcon({ className = "w-6 h-6" }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M20 8V6c0-1.1-.9-2-2-2h-1c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2H9c0-1.1-.9-2-2-2H5C3.9 2 3 2.9 3 4v2c0 1.1.9 2 2 2h.5c.8 0 1.5.7 1.5 1.5S6.3 11 5.5 11H4v2h1.5c1.9 0 3.5-1.6 3.5-3.5 0-.5-.1-1-.3-1.5h6.6c-.2.5-.3 1-.3 1.5 0 1.9 1.6 3.5 3.5 3.5H20v-2h-1.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h.5c1.1 0 2-.9 2-2zM9.5 7h5c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-5c-.3 0-.5.2-.5.5s.2.5.5.5z"/>
+      <path d="M18 14h-3l-2 4-2-4H8l-3 6v2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1h6v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-2l-1-6z"/>
+    </svg>
+  );
 }
 
-// Weather condition icons mapping
+// Weather icon mapping
 const WeatherIcon = ({ condition, className = "w-6 h-6" }) => {
-  const iconMap = {
-    "clear": "sun",
-    "partly-cloudy": "partly-cloudy",
-    "cloudy": "cloud",
-    "rain": "rain",
-    "snow": "snow",
+  const icons = {
+    "clear": Sun,
+    "partly-cloudy": Cloud,
+    "cloudy": Cloud,
+    "rain": CloudRain,
+    "snow": Snowflake,
   };
-  return <Icon name={iconMap[condition] || "partly-cloudy"} className={className} />;
+  const IconComponent = icons[condition] || Cloud;
+  return <IconComponent className={className} />;
 };
 
-// Schedule time icons
+// Schedule time icon mapping
 const ScheduleIcon = ({ time, className = "w-5 h-5" }) => {
-  const iconMap = {
-    "morning": "sunrise",
-    "afternoon": "sun",
-    "evening": "sunset",
-    "overnight": "moon",
+  const icons = {
+    "morning": Sunrise,
+    "afternoon": Sun,
+    "evening": Sunset,
+    "overnight": Moon,
   };
-  return <Icon name={iconMap[time] || "sun"} className={className} />;
+  const IconComponent = icons[time] || Sun;
+  return <IconComponent className={className} />;
 };
 
 // Default data
@@ -409,7 +317,7 @@ function HorseCard({ horse, isActive, onClick }) {
     >
       <div className="flex items-center gap-3 mb-2">
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-white">
-          <Icon name="horse" className="w-7 h-7" />
+          <HorseIcon className="w-7 h-7" />
         </div>
         <div>
           <div className="font-semibold text-[#2C1810]">{horse.name}</div>
@@ -454,18 +362,18 @@ function WeatherBar({ weather, location }) {
         <div className="h-8 w-px bg-[rgba(139,69,19,0.15)]" />
         <div className="flex items-center gap-4 text-sm text-[#6B5344]">
           <span className="flex items-center gap-1">
-            <Icon name="wind" className="w-4 h-4" /> {weather.wind} mph
+            <Wind className="w-4 h-4" /> {weather.wind} mph
           </span>
           <span className="flex items-center gap-1">
-            <Icon name="droplet" className="w-4 h-4" /> {weather.precipChance}%
+            <Droplet className="w-4 h-4" /> {weather.precipChance}%
           </span>
           <span className="flex items-center gap-1">
-            <Icon name="moon" className="w-4 h-4" /> Low {weather.tonightLow}°F
+            <Moon className="w-4 h-4" /> Low {weather.tonightLow}°F
           </span>
         </div>
       </div>
       <div className="flex items-center gap-1 text-sm text-[#6B5344]">
-        <Icon name="map-pin" className="w-4 h-4" /> {location}
+        <MapPin className="w-4 h-4" /> {location}
       </div>
     </div>
   );
@@ -523,7 +431,7 @@ function RecommendationCard({ recommendation, horse, currentBlanketId, setCurren
             }`}
           >
             {currentBlanketId === recommendation.recommendedBlanket.id
-              ? <span className="flex items-center justify-center gap-2"><Icon name="check" className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}</span>
+              ? <span className="flex items-center justify-center gap-2"><Check className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}</span>
               : `Use ${recommendation.recommendedBlanket.name}`}
           </button>
         )}
@@ -595,7 +503,7 @@ function WeatherAlert({ message }) {
   return (
     <div className="bg-[#E89B3C]/10 border border-[#E89B3C]/30 rounded-xl p-4 mt-4">
       <div className="font-semibold text-[#E89B3C] flex items-center gap-2 mb-2">
-        <Icon name="warning" className="w-5 h-5" /> Weather Alert
+        <AlertTriangle className="w-5 h-5" /> Weather Alert
       </div>
       <p className="text-sm text-[#2C1810]">{message}</p>
     </div>
@@ -646,7 +554,7 @@ function Navigation({ location: userLocation }) {
 
       <div className="flex items-center gap-4">
         <span className="text-[#FDF8F0]/80 text-sm flex items-center gap-1">
-          <Icon name="map-pin" className="w-4 h-4" /> {userLocation}
+          <MapPin className="w-4 h-4" /> {userLocation}
         </span>
         <div className="w-10 h-10 bg-[#D4A84B] rounded-full flex items-center justify-center font-semibold text-[#5C4033]">
           KB
@@ -747,7 +655,7 @@ function Dashboard({
             <div className="bg-[#FEF3E2] border border-[#E89B3C]/30 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <span className="text-[#E89B3C]">
-                  <Icon name="warning" className="w-5 h-5" />
+                  <AlertTriangle className="w-5 h-5" />
                 </span>
                 <div>
                   <div className="font-medium text-[#5C4033] text-sm">Saturday</div>
@@ -779,7 +687,7 @@ function Dashboard({
                     </div>
                     {blanket.id === currentBlanketId && (
                       <span className="text-[#9CAF88]">
-                        <Icon name="check" className="w-4 h-4" />
+                        <Check className="w-4 h-4" />
                       </span>
                     )}
                   </button>
@@ -797,7 +705,7 @@ function Dashboard({
             <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] p-4">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A0522D] to-[#8B4513] flex items-center justify-center text-white">
-                  <Icon name="horse" className="w-6 h-6" />
+                  <HorseIcon className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">{activeHorse.name}</div>

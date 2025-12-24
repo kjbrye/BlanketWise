@@ -1,61 +1,33 @@
 import React, { useState } from 'react';
+import { Scale, Droplet, Wind, Thermometer, Check, Package, CloudRain, Leaf, Snowflake } from 'lucide-react';
 
-// Icon component
+// Custom blanket icon (not available in lucide-react)
+function BlanketIcon({ className = "w-5 h-5" }) {
+  return (
+    <svg className={className} viewBox="0 0 283.5 283.5" fill="currentColor" preserveAspectRatio="xMidYMid meet">
+      <path d="M 262.8125 196.472656 C 258.90625 202.710938 216.382812 195.386719 182.480469 202.277344 C 148.578125 209.164062 33.691406 214.589844 27.234375 202.277344 C 21.269531 190.9375 28.265625 159.152344 24.25 146.566406 C 23.925781 145.484375 23.4375 144.507812 22.949219 143.746094 C 16.277344 134.039062 72.582031 69.054688 72.582031 69.054688 C 72.582031 69.054688 76.648438 69.488281 82.507812 72.199219 C 87.011719 74.316406 92.542969 77.789062 98.078125 83.484375 C 110.824219 96.664062 141.253906 98.617188 172.335938 89.722656 C 203.417969 80.824219 237.753906 86.898438 252.234375 105.941406 C 266.71875 124.980469 266.71875 190.179688 262.8125 196.472656 Z" />
+    </svg>
+  );
+}
+
+// Icon mapping
+const iconMap = {
+  blanket: BlanketIcon,
+  scale: Scale,
+  droplet: Droplet,
+  wind: Wind,
+  thermometer: Thermometer,
+  check: Check,
+  box: Package,
+  rain: CloudRain,
+  leaf: Leaf,
+  snowflake: Snowflake,
+};
+
 function Icon({ name, className = "w-5 h-5" }) {
-  const icons = {
-    blanket: (
-      <svg className={className} viewBox="0 0 283.5 283.5" fill="currentColor" preserveAspectRatio="xMidYMid meet">
-        <path d="M 262.8125 196.472656 C 258.90625 202.710938 216.382812 195.386719 182.480469 202.277344 C 148.578125 209.164062 33.691406 214.589844 27.234375 202.277344 C 21.269531 190.9375 28.265625 159.152344 24.25 146.566406 C 23.925781 145.484375 23.4375 144.507812 22.949219 143.746094 C 16.277344 134.039062 72.582031 69.054688 72.582031 69.054688 C 72.582031 69.054688 76.648438 69.488281 82.507812 72.199219 C 87.011719 74.316406 92.542969 77.789062 98.078125 83.484375 C 110.824219 96.664062 141.253906 98.617188 172.335938 89.722656 C 203.417969 80.824219 237.753906 86.898438 252.234375 105.941406 C 266.71875 124.980469 266.71875 190.179688 262.8125 196.472656 Z" />
-      </svg>
-    ),
-    scale: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-      </svg>
-    ),
-    droplet: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4.418 0-8-3.134-8-7 0-4.418 8-12 8-12s8 7.582 8 12c0 3.866-3.582 7-8 7z" />
-      </svg>
-    ),
-    wind: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
-      </svg>
-    ),
-    thermometer: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19c0 1.1.9 2 2 2s2-.9 2-2h-4zM12 3a2 2 0 00-2 2v8.26a4 4 0 102.5 6.74h.01A4 4 0 0014 13.26V5a2 2 0 00-2-2z" />
-      </svg>
-    ),
-    check: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    ),
-    box: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-    ),
-    rain: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13a4 4 0 004 4h9a5 5 0 00.5-9.97A5.002 5.002 0 007 7.03 4.001 4.001 0 003 13z" />
-        <path strokeLinecap="round" d="M8 19v2M12 19v2M16 19v2" />
-      </svg>
-    ),
-    leaf: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-      </svg>
-    ),
-    snowflake: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" />
-      </svg>
-    ),
-  };
-  return icons[name] || null;
+  const IconComponent = iconMap[name];
+  if (!IconComponent) return null;
+  return <IconComponent className={className} />;
 }
 
 // Weight categories for blankets

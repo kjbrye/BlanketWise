@@ -1,52 +1,32 @@
 import React, { useState } from 'react';
+import { Pencil, Trash2, Check, Home, Warehouse, TreePine, CloudRain } from 'lucide-react';
 
-// Icon component
+// Custom horse icon (not available in lucide-react)
+function HorseIcon({ className = "w-5 h-5" }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M20 8V6c0-1.1-.9-2-2-2h-1c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2H9c0-1.1-.9-2-2-2H5C3.9 2 3 2.9 3 4v2c0 1.1.9 2 2 2h.5c.8 0 1.5.7 1.5 1.5S6.3 11 5.5 11H4v2h1.5c1.9 0 3.5-1.6 3.5-3.5 0-.5-.1-1-.3-1.5h6.6c-.2.5-.3 1-.3 1.5 0 1.9 1.6 3.5 3.5 3.5H20v-2h-1.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h.5c1.1 0 2-.9 2-2zM9.5 7h5c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-5c-.3 0-.5.2-.5.5s.2.5.5.5z"/>
+      <path d="M18 14h-3l-2 4-2-4H8l-3 6v2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1h6v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-2l-1-6z"/>
+    </svg>
+  );
+}
+
+// Icon mapping
+const iconMap = {
+  horse: HorseIcon,
+  pencil: Pencil,
+  trash: Trash2,
+  check: Check,
+  home: Home,
+  shed: Warehouse,
+  tree: TreePine,
+  rain: CloudRain,
+};
+
 function Icon({ name, className = "w-5 h-5" }) {
-  const icons = {
-    horse: (
-      <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-        <path d="M20 8V6c0-1.1-.9-2-2-2h-1c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2H9c0-1.1-.9-2-2-2H5C3.9 2 3 2.9 3 4v2c0 1.1.9 2 2 2h.5c.8 0 1.5.7 1.5 1.5S6.3 11 5.5 11H4v2h1.5c1.9 0 3.5-1.6 3.5-3.5 0-.5-.1-1-.3-1.5h6.6c-.2.5-.3 1-.3 1.5 0 1.9 1.6 3.5 3.5 3.5H20v-2h-1.5c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5h.5c1.1 0 2-.9 2-2zM9.5 7h5c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-5c-.3 0-.5.2-.5.5s.2.5.5.5z"/>
-        <path d="M18 14h-3l-2 4-2-4H8l-3 6v2c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-1h6v1c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-2l-1-6z"/>
-      </svg>
-    ),
-    pencil: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-      </svg>
-    ),
-    trash: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      </svg>
-    ),
-    check: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    ),
-    home: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
-    shed: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-      </svg>
-    ),
-    tree: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m-6-6l6-6 6 6M6 9l6-6 6 6" />
-      </svg>
-    ),
-    rain: (
-      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13a4 4 0 004 4h9a5 5 0 00.5-9.97A5.002 5.002 0 007 7.03 4.001 4.001 0 003 13z" />
-        <path strokeLinecap="round" d="M8 19v2M12 19v2M16 19v2" />
-      </svg>
-    ),
-  };
-  return icons[name] || null;
+  const IconComponent = iconMap[name];
+  if (!IconComponent) return null;
+  return <IconComponent className={className} />;
 }
 
 // Toggle Component
