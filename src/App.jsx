@@ -719,7 +719,7 @@ export default function App() {
   const [currentBlanketId, setCurrentBlanketId] = useState(2);
   const [weather, setWeather] = useState(defaultWeather);
   const [settings, setSettings] = useState(defaultSettings);
-  const [location, setLocation] = useState("Milwaukee, WI");
+  const [location, setLocation] = useState("Madison, WI");
 
   return (
     <BrowserRouter>
