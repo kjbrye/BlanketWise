@@ -71,50 +71,65 @@ const defaultSettings = {
 
 // ============================================
 // RECOMMENDATION ENGINE
+// Baseline for midwest horse with natural coat:
+// - Above 40°F: No blanket (sheet if rain)
+// - 30-40°F: Lightweight
+// - 15-30°F: Medium
+// - Below 15°F: Heavyweight
+// - Strong winds or frigid temps: Add neck rug
 // ============================================
 function getRecommendation(weather, horse, settings, blankets) {
   const effectiveTemp = settings.useFeelsLike ? weather.feelsLike : weather.temp;
-  
-  let sheetMax = 60;
-  let lightMax = 45;
-  let mediumMax = 32;
-  let heavyMax = 20;
-  
+
+  // Base thresholds for a horse with natural coat (coatGrowth=50)
+  let sheetMax = 50;   // Sheet only needed for rain above 40°F
+  let lightMax = 40;   // Lightweight: 30-40°F
+  let mediumMax = 30;  // Medium: 15-30°F
+  let heavyMax = 15;   // Heavy: below 15°F
+
+  // Coat adjustment: less coat = blanket at higher temps
+  // At coatGrowth=0 (clipped/light): +5°F to thresholds
+  // At coatGrowth=100 (very thick): -5°F to thresholds
   const coatAdjustment = (horse.coatGrowth - 50) / 10;
   lightMax -= coatAdjustment;
   mediumMax -= coatAdjustment;
   heavyMax -= coatAdjustment;
-  
+
+  // Tolerance adjustment: sensitive horses need blankets sooner
   const toleranceAdjustment = (horse.coldTolerance - 50) / 10;
   lightMax -= toleranceAdjustment;
   mediumMax -= toleranceAdjustment;
   heavyMax -= toleranceAdjustment;
-  
+
+  // Clipped horses need significantly more coverage
   if (horse.isClipped) {
     lightMax += 15;
-    mediumMax += 12;
-    heavyMax += 10;
+    mediumMax += 15;
+    heavyMax += 15;
   }
-  
+
+  // Senior horses benefit from slightly warmer coverage
   if (horse.isSenior) {
     lightMax += 5;
     mediumMax += 5;
     heavyMax += 5;
   }
-  
+
+  // Thin keepers need extra warmth
   if (horse.isThinKeeper) {
     lightMax += 8;
     mediumMax += 8;
     heavyMax += 8;
   }
-  
+
+  // User's temperature buffer preference
   lightMax += settings.tempBuffer;
   mediumMax += settings.tempBuffer;
   heavyMax += settings.tempBuffer;
-  
+
   let weightNeeded = "none";
   let gramsNeeded = 0;
-  
+
   if (effectiveTemp <= heavyMax) {
     weightNeeded = "heavy";
     gramsNeeded = 300;
@@ -124,36 +139,40 @@ function getRecommendation(weather, horse, settings, blankets) {
   } else if (effectiveTemp <= lightMax) {
     weightNeeded = "light";
     gramsNeeded = 100;
-  } else if (effectiveTemp <= sheetMax || (weather.precipChance > 40 && settings.rainPriority)) {
+  } else if (weather.precipChance > 40 && settings.rainPriority) {
+    // Only recommend sheet for rain, not just cool temps
     weightNeeded = "sheet";
     gramsNeeded = 0;
   }
-  
+
   const needsWaterproof = weather.precipChance > 30 && settings.rainPriority;
-  
+
+  // Neck rug needed for strong winds (>20mph) or frigid temps (<10°F)
+  const needsNeckRug = weather.wind > 20 || effectiveTemp < 10;
+
   let confidence = 95;
   if (effectiveTemp > mediumMax - 3 && effectiveTemp < mediumMax + 3) confidence = 80;
   if (weather.precipChance > 50) confidence -= 5;
-  
+
   let recommendedBlanket = null;
   const sortedBlankets = [...blankets].sort((a, b) => {
     const aDiff = Math.abs(a.grams - gramsNeeded);
     const bDiff = Math.abs(b.grams - gramsNeeded);
     return aDiff - bDiff;
   });
-  
+
   for (const blanket of sortedBlankets) {
     if (needsWaterproof && !blanket.waterproof) continue;
     recommendedBlanket = blanket;
     break;
   }
-  
+
   if (!recommendedBlanket && sortedBlankets.length > 0) {
     recommendedBlanket = sortedBlankets[0];
   }
-  
-  const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp);
-  
+
+  const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp, needsNeckRug);
+
   return {
     weightNeeded,
     gramsNeeded,
@@ -161,41 +180,48 @@ function getRecommendation(weather, horse, settings, blankets) {
     confidence,
     reasoning,
     needsWaterproof,
+    needsNeckRug,
     effectiveTemp,
   };
 }
 
-function generateReasoning(weather, horse, settings, weight, effectiveTemp) {
+function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug) {
   const parts = [];
-  
+
   if (settings.useFeelsLike && weather.feelsLike !== weather.temp) {
     parts.push(`With a feels-like temperature of ${effectiveTemp}°F`);
   } else {
     parts.push(`At ${effectiveTemp}°F`);
   }
-  
+
   if (weather.wind > 10) {
     parts.push(`and ${weather.wind} mph winds`);
   }
-  
+
   const coatLevel = horse.coatGrowth < 33 ? "light" : horse.coatGrowth < 66 ? "medium" : "heavy";
-  parts.push(`${horse.name}'s ${coatLevel} winter coat provides ${coatLevel === "heavy" ? "good" : coatLevel === "medium" ? "some" : "minimal"} natural protection`);
-  
-  if (weather.wind > 15) {
-    parts.push("but the wind chill factor warrants additional coverage");
-  }
-  
+  parts.push(`${horse.name}'s ${coatLevel} winter coat provides ${coatLevel === "heavy" ? "good" : coatLevel === "medium" ? "moderate" : "minimal"} natural protection`);
+
   if (horse.isClipped) {
-    parts.push("Since he's clipped, extra insulation is needed");
-  } else if (weight !== "heavy") {
-    parts.push("Since he's not clipped, a heavier blanket would risk overheating");
+    parts.push("Since clipped, extra insulation is needed");
   }
-  
+
   if (horse.isSenior) {
-    parts.push("As a senior horse, he benefits from slightly warmer coverage");
+    parts.push("As a senior, slightly warmer coverage helps");
   }
-  
-  return parts.join(", ") + ".";
+
+  if (horse.isThinKeeper) {
+    parts.push("Being a hard keeper, extra warmth is beneficial");
+  }
+
+  if (needsNeckRug) {
+    if (weather.wind > 20) {
+      parts.push("Strong winds call for a neck rug");
+    } else {
+      parts.push("Frigid temperatures warrant a neck rug");
+    }
+  }
+
+  return parts.join(". ") + ".";
 }
 
 function getDailySchedule(weather, horse, settings, blankets) {
@@ -368,14 +394,22 @@ function RecommendationCard({ recommendation, horse, currentBlanketId, setCurren
           <div>
             <h3 className="font-display text-2xl font-bold text-[#5C4033]">
               {weightLabels[recommendation.weightNeeded]}
+              {recommendation.needsNeckRug && " + Neck Rug"}
             </h3>
             <p className="text-[#6B5344]">
               {recommendation.gramsNeeded}g fill • {recommendation.needsWaterproof ? "Waterproof" : "Breathable"} turnout
             </p>
           </div>
         </div>
-        <div className="bg-[#9CAF88] text-white px-4 py-2 rounded-full font-semibold text-sm">
-          {recommendation.confidence}% Confidence
+        <div className="flex flex-col items-end gap-2">
+          <div className="bg-[#9CAF88] text-white px-4 py-2 rounded-full font-semibold text-sm">
+            {recommendation.confidence}% Confidence
+          </div>
+          {recommendation.needsNeckRug && (
+            <div className="bg-[#5C4033] text-white px-3 py-1 rounded-full text-xs font-medium">
+              🧣 Neck Rug Recommended
+            </div>
+          )}
         </div>
       </div>
       
