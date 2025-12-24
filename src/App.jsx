@@ -61,7 +61,7 @@ const defaultSettings = {
   useFeelsLike: true,
   rainPriority: true,
   exerciseAdjustment: true,
-  tempBuffer: 5,
+  tempBuffer: 0,
   notifications: {
     blanketChange: true,
     severeWeather: true,
