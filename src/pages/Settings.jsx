@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   MapPin, Pencil, Thermometer, Wind, CloudRain, Zap, SlidersHorizontal,
   Bell, AlertTriangle, Calendar, BarChart3, Clock, Save, Download,
-  Trash2, Heart, Scale, Menu, Snowflake
+  Trash2, Heart, Scale, Menu, Snowflake, Layers
 } from 'lucide-react';
 
 // Custom icons
@@ -43,6 +43,7 @@ const iconMap = {
   weight: Scale,
   coat: Menu,
   snowflake: Snowflake,
+  layers: Layers,
 };
 
 function Icon({ name, className = "w-5 h-5" }) {
@@ -109,6 +110,13 @@ export default function Settings({ settings, setSettings, location, setLocation 
     setSettings({
       ...settings,
       notifications: { ...settings.notifications, [key]: value }
+    });
+  };
+
+  const updateLinerSettings = (key, value) => {
+    setSettings({
+      ...settings,
+      liner: { ...(settings.liner || {}), [key]: value }
     });
   };
 
@@ -252,6 +260,50 @@ export default function Settings({ settings, setSettings, location, setLocation 
             <div className="flex justify-between text-xs text-[#6B5344] mt-1">
               <span>0°F</span>
               <span>15°F</span>
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
+
+      {/* Liner Settings */}
+      <SettingsSection
+        title="Liner Settings"
+        description="Configure how blanket liners are used in recommendations"
+      >
+        <SettingRow
+          iconName="layers"
+          label="Include Liners in Recommendations"
+          description="Consider paired liners when calculating blanket recommendations"
+        >
+          <Toggle
+            active={settings.liner?.includeInRecommendations !== false}
+            onChange={() => updateLinerSettings('includeInRecommendations', !(settings.liner?.includeInRecommendations !== false))}
+          />
+        </SettingRow>
+
+        <SettingRow
+          iconName="weight"
+          label="Show Combined Weight"
+          description="Display combined weight (blanket + liner) on recommendations"
+        >
+          <Toggle
+            active={settings.liner?.showCombinedWeight !== false}
+            onChange={() => updateLinerSettings('showCombinedWeight', !(settings.liner?.showCombinedWeight !== false))}
+          />
+        </SettingRow>
+
+        <div className="py-4 border-b border-[rgba(139,69,19,0.1)] last:border-0">
+          <div className="flex items-start gap-3">
+            <span className="text-[#9CAF88]">
+              <Icon name="layers" className="w-6 h-6" />
+            </span>
+            <div className="text-sm text-[#6B5344]">
+              <p className="mb-2">
+                <strong className="text-[#5C4033]">How liners work:</strong> Liners can be paired with blanket shells in your inventory to add extra warmth.
+              </p>
+              <p>
+                When a liner is paired with a blanket, the recommendation engine considers the combined weight (e.g., 200g blanket + 100g liner = 300g total) to find the best match for current conditions.
+              </p>
             </div>
           </div>
         </div>

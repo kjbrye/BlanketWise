@@ -38,6 +38,10 @@ export const defaultSettings = {
   rainPriority: true,
   exerciseAdjustment: true,
   tempBuffer: 0,
+  liner: {
+    includeInRecommendations: true,
+    showCombinedWeight: true,
+  },
   notifications: {
     blanketChange: true,
     severeWeather: true,
