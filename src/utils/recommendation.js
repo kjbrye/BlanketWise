@@ -168,10 +168,14 @@ export function getRecommendation(weather, horse, settings, blankets, liners = [
   let recommendedLiner = null;
   let combinedGrams = 0;
 
-  // Helper to get paired liner for a blanket
-  const getPairedLiner = (blanketId) => liners.find(l => l.pairedWithBlanketId === blanketId);
+  // Check if liners should be included in recommendations
+  const includeLiners = settings.liner?.includeInRecommendations !== false;
+  const effectiveLiners = includeLiners ? liners : [];
 
-  // Calculate effective grams for each blanket (including paired liner)
+  // Helper to get paired liner for a blanket
+  const getPairedLiner = (blanketId) => effectiveLiners.find(l => l.pairedWithBlanketId === blanketId);
+
+  // Calculate effective grams for each blanket (including paired liner if enabled)
   const blanketsWithEffectiveGrams = blankets.map(blanket => {
     const pairedLiner = getPairedLiner(blanket.id);
     const effectiveGrams = blanket.grams + (pairedLiner?.grams || 0);

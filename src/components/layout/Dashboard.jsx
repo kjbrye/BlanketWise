@@ -115,6 +115,7 @@ export default function Dashboard({
             <RecommendationCard
               recommendation={recommendation}
               horse={activeHorse}
+              settings={settings}
               currentBlanketId={currentBlanketId}
               setCurrentBlanketId={setCurrentBlanketId}
             />

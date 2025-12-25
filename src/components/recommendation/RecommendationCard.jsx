@@ -1,7 +1,9 @@
 import { Check } from 'lucide-react';
 import { BlanketIcon } from '../icons';
 
-export default function RecommendationCard({ recommendation, horse, currentBlanketId, setCurrentBlanketId }) {
+export default function RecommendationCard({ recommendation, horse, settings, currentBlanketId, setCurrentBlanketId }) {
+  const showCombinedWeight = settings?.liner?.showCombinedWeight !== false;
+  const showLiner = recommendation.recommendedLiner && showCombinedWeight;
   const weightLabels = {
     none: "No Blanket Needed",
     sheet: "Rain Sheet",
@@ -30,16 +32,16 @@ export default function RecommendationCard({ recommendation, horse, currentBlank
         <h2 className="font-display text-3xl font-bold mb-1">
           {weightLabels[recommendation.weightNeeded]}
         </h2>
-        {recommendation.recommendedLiner && (
+        {showLiner && (
           <p className="text-white/90 font-medium">+ {recommendation.recommendedLiner.name}</p>
         )}
         {recommendation.needsNeckRug && (
           <p className="text-white/90 font-medium">+ Neck Rug</p>
         )}
         <p className="text-white/75 text-sm mt-2">
-          for {horse.name} • {recommendation.recommendedLiner
+          for {horse.name} • {showLiner
             ? `${recommendation.combinedGrams}g combined (${recommendation.recommendedBlanket?.grams || 0}g + ${recommendation.recommendedLiner.grams}g)`
-            : `${recommendation.gramsNeeded}g fill`}
+            : `${recommendation.recommendedBlanket?.grams || recommendation.gramsNeeded}g fill`}
           {recommendation.needsWaterproof && " • Waterproof"}
         </p>
       </div>
@@ -60,9 +62,9 @@ export default function RecommendationCard({ recommendation, horse, currentBlank
             {currentBlanketId === recommendation.recommendedBlanket.id
               ? <span className="flex items-center justify-center gap-2">
                   <Check className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}
-                  {recommendation.recommendedLiner && ` + ${recommendation.recommendedLiner.name}`}
+                  {showLiner && ` + ${recommendation.recommendedLiner.name}`}
                 </span>
-              : `Use ${recommendation.recommendedBlanket.name}${recommendation.recommendedLiner ? ` + ${recommendation.recommendedLiner.name}` : ''}`}
+              : `Use ${recommendation.recommendedBlanket.name}${showLiner ? ` + ${recommendation.recommendedLiner.name}` : ''}`}
           </button>
         )}
       </div>
