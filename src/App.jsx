@@ -11,7 +11,7 @@ import { Navigation, Dashboard } from './components/layout';
 import { LocationSearch } from './components/weather';
 
 // Data & Utils
-import { defaultHorse, defaultBlankets, defaultWeather, defaultSettings } from './data/defaults';
+import { defaultHorse, defaultBlankets, defaultLiners, defaultWeather, defaultSettings } from './data/defaults';
 import { fetchWeather, getCurrentPosition, reverseGeocode, DEFAULT_LOCATION } from './utils/weather';
 
 // Auto-refresh interval: 30 minutes
@@ -22,6 +22,7 @@ export default function App() {
   const [horses, setHorses] = useState([defaultHorse]);
   const [activeHorseId, setActiveHorseId] = useState(1);
   const [blankets, setBlankets] = useState(defaultBlankets);
+  const [liners, setLiners] = useState(defaultLiners);
   const [currentBlanketId, setCurrentBlanketId] = useState(2);
   const [settings, setSettings] = useState(defaultSettings);
 
@@ -134,6 +135,7 @@ export default function App() {
                 activeHorseId={activeHorseId}
                 setActiveHorseId={setActiveHorseId}
                 blankets={blankets}
+                liners={liners}
                 currentBlanketId={currentBlanketId}
                 setCurrentBlanketId={setCurrentBlanketId}
                 weather={weather}
@@ -165,6 +167,8 @@ export default function App() {
               <BlanketInventory
                 blankets={blankets}
                 setBlankets={setBlankets}
+                liners={liners}
+                setLiners={setLiners}
                 currentBlanketId={currentBlanketId}
                 setCurrentBlanketId={setCurrentBlanketId}
               />

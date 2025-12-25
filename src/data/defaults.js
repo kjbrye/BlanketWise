@@ -18,6 +18,11 @@ export const defaultBlankets = [
   { id: 4, name: "Rain Sheet", grams: 0, waterproof: true, color: "#A0522D", status: "available" },
 ];
 
+export const defaultLiners = [
+  { id: 101, name: "Fleece Liner", grams: 100, color: "#E8D4C4", pairedWithBlanketId: null },
+  { id: 102, name: "Quilted Liner", grams: 200, color: "#C9B8A8", pairedWithBlanketId: null },
+];
+
 export const defaultWeather = {
   temp: 42,
   feelsLike: 38,

@@ -9,7 +9,7 @@
  * - Rain expected (any temp): Waterproof / sheet
  */
 
-function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug) {
+function generateReasoning(weather, horse, settings, weight, effectiveTemp, needsNeckRug, liner = null) {
   const parts = [];
   const coatLevel = horse.coatGrowth < 33 ? "light" : horse.coatGrowth < 66 ? "medium" : "heavy";
   const coatProtection = coatLevel === "heavy" ? "excellent" : coatLevel === "medium" ? "moderate" : "minimal";
@@ -79,10 +79,15 @@ function generateReasoning(weather, horse, settings, weight, effectiveTemp, need
     }
   }
 
+  // Liner note
+  if (liner) {
+    parts.push(`The ${liner.name} adds ${liner.grams}g of extra warmth`);
+  }
+
   return parts.join(". ") + ".";
 }
 
-export function getRecommendation(weather, horse, settings, blankets) {
+export function getRecommendation(weather, horse, settings, blankets, liners = []) {
   const effectiveTemp = settings.useFeelsLike ? weather.feelsLike : weather.temp;
 
   // Base thresholds for a horse with natural coat (coatGrowth=50)
@@ -160,28 +165,49 @@ export function getRecommendation(weather, horse, settings, blankets) {
   if (weather.precipChance > 50) confidence -= 5;
 
   let recommendedBlanket = null;
-  const sortedBlankets = [...blankets].sort((a, b) => {
-    const aDiff = Math.abs(a.grams - gramsNeeded);
-    const bDiff = Math.abs(b.grams - gramsNeeded);
+  let recommendedLiner = null;
+  let combinedGrams = 0;
+
+  // Helper to get paired liner for a blanket
+  const getPairedLiner = (blanketId) => liners.find(l => l.pairedWithBlanketId === blanketId);
+
+  // Calculate effective grams for each blanket (including paired liner)
+  const blanketsWithEffectiveGrams = blankets.map(blanket => {
+    const pairedLiner = getPairedLiner(blanket.id);
+    const effectiveGrams = blanket.grams + (pairedLiner?.grams || 0);
+    return { blanket, pairedLiner, effectiveGrams };
+  });
+
+  // Sort by closeness to gramsNeeded
+  const sortedBlankets = [...blanketsWithEffectiveGrams].sort((a, b) => {
+    const aDiff = Math.abs(a.effectiveGrams - gramsNeeded);
+    const bDiff = Math.abs(b.effectiveGrams - gramsNeeded);
     return aDiff - bDiff;
   });
 
-  for (const blanket of sortedBlankets) {
+  for (const { blanket, pairedLiner, effectiveGrams } of sortedBlankets) {
     if (needsWaterproof && !blanket.waterproof) continue;
     recommendedBlanket = blanket;
+    recommendedLiner = pairedLiner;
+    combinedGrams = effectiveGrams;
     break;
   }
 
   if (!recommendedBlanket && sortedBlankets.length > 0) {
-    recommendedBlanket = sortedBlankets[0];
+    const first = sortedBlankets[0];
+    recommendedBlanket = first.blanket;
+    recommendedLiner = first.pairedLiner;
+    combinedGrams = first.effectiveGrams;
   }
 
-  const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp, needsNeckRug);
+  const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp, needsNeckRug, recommendedLiner);
 
   return {
     weightNeeded,
     gramsNeeded,
     recommendedBlanket,
+    recommendedLiner,
+    combinedGrams,
     confidence,
     reasoning,
     needsWaterproof,
@@ -190,7 +216,7 @@ export function getRecommendation(weather, horse, settings, blankets) {
   };
 }
 
-export function getDailySchedule(weather, horse, settings, blankets) {
+export function getDailySchedule(weather, horse, settings, blankets, liners = []) {
   const times = [
     { label: "Morning (6 AM)", iconType: "morning", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2 },
     { label: "Afternoon (Now)", iconType: "afternoon", temp: weather.temp, feelsLike: weather.feelsLike, current: true },
@@ -200,7 +226,7 @@ export function getDailySchedule(weather, horse, settings, blankets) {
 
   return times.map(time => {
     const timeWeather = { ...weather, temp: time.temp, feelsLike: time.feelsLike };
-    const rec = getRecommendation(timeWeather, horse, settings, blankets);
+    const rec = getRecommendation(timeWeather, horse, settings, blankets, liners);
     return { ...time, recommendation: rec.weightNeeded };
   });
 }

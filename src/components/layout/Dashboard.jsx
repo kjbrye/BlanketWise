@@ -10,13 +10,13 @@ const recLabels = { none: "None", sheet: "Sheet", light: "Light", medium: "Med",
 
 export default function Dashboard({
   horses, activeHorseId, setActiveHorseId,
-  blankets, currentBlanketId, setCurrentBlanketId,
+  blankets, liners = [], currentBlanketId, setCurrentBlanketId,
   weather, forecast = [], settings, location,
   weatherLoading, weatherError, lastUpdated, onRefresh, onLocationClick
 }) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
-  const recommendation = getRecommendation(weather, activeHorse, settings, blankets);
-  const schedule = getDailySchedule(weather, activeHorse, settings, blankets);
+  const recommendation = getRecommendation(weather, activeHorse, settings, blankets, liners);
+  const schedule = getDailySchedule(weather, activeHorse, settings, blankets, liners);
 
   // Compute recommendations for each forecast day based on high temp
   const forecastWithRecs = forecast.map(day => {
@@ -27,7 +27,7 @@ export default function Dashboard({
       precipChance: day.precipChance || 0,
       condition: day.condition
     };
-    const rec = getRecommendation(dayWeather, activeHorse, settings, blankets);
+    const rec = getRecommendation(dayWeather, activeHorse, settings, blankets, liners);
     return { ...day, rec: recLabels[rec.weightNeeded] };
   });
 

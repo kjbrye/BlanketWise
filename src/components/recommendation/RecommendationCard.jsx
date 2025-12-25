@@ -30,11 +30,16 @@ export default function RecommendationCard({ recommendation, horse, currentBlank
         <h2 className="font-display text-3xl font-bold mb-1">
           {weightLabels[recommendation.weightNeeded]}
         </h2>
+        {recommendation.recommendedLiner && (
+          <p className="text-white/90 font-medium">+ {recommendation.recommendedLiner.name}</p>
+        )}
         {recommendation.needsNeckRug && (
           <p className="text-white/90 font-medium">+ Neck Rug</p>
         )}
         <p className="text-white/75 text-sm mt-2">
-          for {horse.name} • {recommendation.gramsNeeded}g fill
+          for {horse.name} • {recommendation.recommendedLiner
+            ? `${recommendation.combinedGrams}g combined (${recommendation.recommendedBlanket?.grams || 0}g + ${recommendation.recommendedLiner.grams}g)`
+            : `${recommendation.gramsNeeded}g fill`}
           {recommendation.needsWaterproof && " • Waterproof"}
         </p>
       </div>
@@ -53,8 +58,11 @@ export default function RecommendationCard({ recommendation, horse, currentBlank
             }`}
           >
             {currentBlanketId === recommendation.recommendedBlanket.id
-              ? <span className="flex items-center justify-center gap-2"><Check className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}</span>
-              : `Use ${recommendation.recommendedBlanket.name}`}
+              ? <span className="flex items-center justify-center gap-2">
+                  <Check className="w-4 h-4" /> Wearing {recommendation.recommendedBlanket.name}
+                  {recommendation.recommendedLiner && ` + ${recommendation.recommendedLiner.name}`}
+                </span>
+              : `Use ${recommendation.recommendedBlanket.name}${recommendation.recommendedLiner ? ` + ${recommendation.recommendedLiner.name}` : ''}`}
           </button>
         )}
       </div>
