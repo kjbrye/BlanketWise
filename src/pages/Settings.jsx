@@ -537,7 +537,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-[#A0522D] flex items-center justify-center flex-shrink-0">
-                  <Icon name="weight" className="w-4 h-4 text-white" />
+                  <SeniorHorseIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Thin/Hard Keeper</div>
