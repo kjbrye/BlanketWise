@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
-import { BlanketIcon } from '../icons';
 
 export default function Navigation({ location: userLocation, onLocationClick }) {
   const routerLocation = useLocation();
@@ -15,10 +14,11 @@ export default function Navigation({ location: userLocation, onLocationClick }) 
   return (
     <header className="bg-gradient-to-r from-[#5C4033] to-[#8B4513] px-6 py-4 flex items-center justify-between shadow-lg">
       <Link to="/" className="flex items-center gap-3">
-        <div className="w-11 h-11 bg-[#D4A84B] rounded-full flex items-center justify-center">
-          <BlanketIcon className="w-7 h-7" />
+        <img src="/BlanketWise-Logo.svg" alt="BlanketWise - Keep them cozy" className="h-20 w-20 rounded-full" />
+        <div className="flex flex-col">
+          <span className="text-2xl font-bold text-[#FDF8F0] tracking-wide" style={{ fontFamily: "'Recoleta', Georgia, serif" }}>BlanketWise</span>
+          <span className="text-sm text-[#FDF8F0]/70" style={{ fontFamily: "'Quicksand', sans-serif" }}>Keep them cozy</span>
         </div>
-        <span className="font-display text-2xl font-bold text-[#FDF8F0] tracking-tight">BlanketWise</span>
       </Link>
 
       <nav className="flex gap-8">

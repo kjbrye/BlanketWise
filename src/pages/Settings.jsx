@@ -455,7 +455,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-[#D4A84B] flex items-center justify-center flex-shrink-0">
-                  <ClipperIcon className="w-4 h-4 text-white" />
+                  <ClipperIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Clipped</div>
@@ -470,7 +470,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
             <div className="bg-[#FDF8F0] rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-[#8B4513] flex items-center justify-center flex-shrink-0">
-                  <SeniorHorseIcon className="w-4 h-4 text-white" />
+                  <SeniorHorseIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <div className="font-medium text-[#5C4033]">Senior Horse (20+ years)</div>
@@ -558,13 +558,9 @@ export default function Settings({ settings, setSettings, location, setLocation 
       {/* About */}
       <SettingsSection title="About">
         <div className="text-center py-4">
-          <div className="w-16 h-16 bg-[#D4A84B] rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10" viewBox="0 0 283.5 283.5" fill="none" preserveAspectRatio="xMidYMid meet">
-              <path fill="#253957" d="M 262.8125 196.472656 C 258.90625 202.710938 216.382812 195.386719 182.480469 202.277344 C 148.578125 209.164062 33.691406 214.589844 27.234375 202.277344 C 21.269531 190.9375 28.265625 159.152344 24.25 146.566406 C 23.925781 145.484375 23.4375 144.507812 22.949219 143.746094 C 16.277344 134.039062 72.582031 69.054688 72.582031 69.054688 C 72.582031 69.054688 76.648438 69.488281 82.507812 72.199219 C 87.011719 74.316406 92.542969 77.789062 98.078125 83.484375 C 110.824219 96.664062 141.253906 98.617188 172.335938 89.722656 C 203.417969 80.824219 237.753906 86.898438 252.234375 105.941406 C 266.71875 124.980469 266.71875 190.179688 262.8125 196.472656 Z" />
-            </svg>
-          </div>
-          <h3 className="font-display text-2xl font-bold text-[#5C4033]">BlanketWise</h3>
-          <p className="text-[#6B5344] mt-1">Smart Horse Blanketing</p>
+          <img src="/BlanketWise-Logo.svg" alt="BlanketWise" className="w-24 h-24 rounded-full mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-[#5C4033] tracking-wide" style={{ fontFamily: "'Recoleta', Georgia, serif" }}>BlanketWise</h3>
+          <p className="text-[#6B5344] mt-1" style={{ fontFamily: "'Quicksand', sans-serif" }}>Keep them cozy</p>
           <p className="text-sm text-[#6B5344] mt-4">Version 1.0.0</p>
           <p className="text-xs text-[#6B5344] mt-2 flex items-center justify-center gap-1">
             Made with <Icon name="heart" className="w-3 h-3 text-red-500" /> for horse owners everywhere

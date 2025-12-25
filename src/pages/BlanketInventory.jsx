@@ -228,9 +228,9 @@ function BlanketCard({ blanket, isInUse, onUpdate, onDelete, onSetInUse }) {
             </div>
             <div className="text-xs text-[#6B5344]">Best For</div>
             <div className="font-semibold text-[#5C4033]">
-              {blanket.grams === 0 ? '50°F+' :
-               blanket.grams <= 150 ? '40-50°F' :
-               blanket.grams <= 300 ? '25-40°F' : 'Below 25°F'}
+              {blanket.grams === 0 ? 'Above 40°F' :
+               blanket.grams <= 150 ? '30-40°F' :
+               blanket.grams <= 300 ? '15-30°F' : 'Below 15°F'}
             </div>
           </div>
         </div>
@@ -543,7 +543,7 @@ export default function BlanketInventory({ blankets, setBlankets, currentBlanket
               </div>
               <div className="font-semibold text-[#5C4033]">{cat.label.split(' ')[0]}</div>
               <div className="text-xs text-[#6B5344]">
-                {cat.max === 0 ? '50°F+' : cat.max <= 150 ? '40-50°F' : cat.max <= 300 ? '25-40°F' : 'Below 25°F'}
+                {cat.max === 0 ? 'Above 40°F' : cat.max <= 150 ? '30-40°F' : cat.max <= 300 ? '15-30°F' : 'Below 15°F'}
               </div>
             </div>
           ))}

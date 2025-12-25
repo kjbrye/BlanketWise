@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Montserrat', 'sans-serif'],
+        display: ['Recoleta', 'Georgia', 'serif'],
         body: ['Montserrat', 'sans-serif'],
       },
       colors: {
