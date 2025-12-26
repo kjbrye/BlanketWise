@@ -65,6 +65,10 @@ function generateReasoning(weather, horse, settings, weight, effectiveTemp, need
     parts.push("Extra coverage helps hard keepers conserve body heat");
   }
 
+  if (horse.isFoal && weight !== "none") {
+    parts.push("Foals under 6 months need extra warmth as their thermoregulation is still developing");
+  }
+
   // Waterproof note if raining
   if (weather.precipChance > 30 && settings.rainPriority && weight !== "none") {
     parts.push("Make sure to use a waterproof option with rain in the forecast");
@@ -230,6 +234,13 @@ export function getRecommendation(weather, horse, settings, blankets, liners = [
     lightMax += 8;
     mediumMax += 8;
     heavyMax += 8;
+  }
+
+  // Foals (6 months and under) need significantly more warmth
+  if (horse.isFoal) {
+    lightMax += 10;
+    mediumMax += 10;
+    heavyMax += 10;
   }
 
   // User's temperature buffer preference

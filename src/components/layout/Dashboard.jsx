@@ -230,6 +230,7 @@ export default function Dashboard({
                 </span>
                 {activeHorse.isClipped && <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344] flex items-center gap-1"><ClipperIcon className="w-3 h-3" /> Clipped</span>}
                 {activeHorse.isSenior && <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344]">Senior</span>}
+                {activeHorse.isFoal && <span className="px-2 py-1 bg-[#FDF8F0] rounded text-[#6B5344]">Foal</span>}
               </div>
               <Link
                 to="/horses"

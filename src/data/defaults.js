@@ -8,6 +8,7 @@ export const defaultHorse = {
   isClipped: false,
   isSenior: true,
   isThinKeeper: false,
+  isFoal: false,
   shelterAccess: "run-in",
 };
 

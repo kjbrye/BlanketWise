@@ -204,12 +204,20 @@ function HorseProfileCard({ horse, onUpdate, onDelete }) {
             <Toggle active={horse.isSenior} onChange={() => onUpdate({ isSenior: !horse.isSenior })} />
           </div>
 
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-3 border-b border-[rgba(139,69,19,0.1)]">
             <div>
               <div className="text-sm font-medium">Thin/Hard Keeper</div>
               <div className="text-xs text-[#6B5344]">Below ideal weight</div>
             </div>
             <Toggle active={horse.isThinKeeper} onChange={() => onUpdate({ isThinKeeper: !horse.isThinKeeper })} />
+          </div>
+
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <div className="text-sm font-medium">Foal</div>
+              <div className="text-xs text-[#6B5344]">6 months or younger</div>
+            </div>
+            <Toggle active={horse.isFoal} onChange={() => onUpdate({ isFoal: !horse.isFoal })} />
           </div>
         </div>
       </div>
@@ -265,6 +273,7 @@ function AddHorseForm({ onAdd, onCancel }) {
       isClipped: false,
       isSenior: parseInt(age) >= 20,
       isThinKeeper: false,
+      isFoal: false,
       shelterAccess: 'run-in',
     });
   };
