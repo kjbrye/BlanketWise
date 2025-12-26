@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Pencil, Trash2, Check, Home, Warehouse, TreePine, CloudRain } from 'lucide-react';
+import { DeleteConfirmModal } from '../components/ui';
 
 // Custom icons (not available in lucide-react)
 function ClipperIcon({ className = "w-5 h-5" }) {
@@ -363,16 +364,35 @@ function AddHorseForm({ onAdd, onCancel }) {
 }
 
 // Main MyHorses Page
-export default function MyHorses({ horses, setHorses, activeHorseId, setActiveHorseId }) {
+export default function MyHorses({
+  horses,
+  activeHorseId,
+  setActiveHorseId,
+  onAddHorse,
+  onUpdateHorse,
+  onDeleteHorse
+}) {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, horseId: null, horseName: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleAddHorse = (newHorse) => {
-    setHorses([...horses, newHorse]);
-    setShowAddForm(false);
+  const handleAddHorse = async (newHorse) => {
+    try {
+      await onAddHorse(newHorse);
+      setShowAddForm(false);
+    } catch (err) {
+      console.error('Failed to add horse:', err);
+      alert('Failed to add horse. Please try again.');
+    }
   };
 
-  const handleUpdateHorse = (horseId, updates) => {
-    setHorses(horses.map(h => h.id === horseId ? { ...h, ...updates } : h));
+  const handleUpdateHorse = async (horseId, updates) => {
+    try {
+      await onUpdateHorse(horseId, updates);
+    } catch (err) {
+      console.error('Failed to update horse:', err);
+      alert('Failed to update horse. Please try again.');
+    }
   };
 
   const handleDeleteHorse = (horseId) => {
@@ -380,11 +400,24 @@ export default function MyHorses({ horses, setHorses, activeHorseId, setActiveHo
       alert("You must have at least one horse.");
       return;
     }
-    if (confirm(`Are you sure you want to delete this horse?`)) {
-      setHorses(horses.filter(h => h.id !== horseId));
+    const horse = horses.find(h => h.id === horseId);
+    setDeleteConfirm({ show: true, horseId, horseName: horse?.name || 'this horse' });
+  };
+
+  const confirmDelete = async () => {
+    const { horseId } = deleteConfirm;
+    setIsDeleting(true);
+    try {
+      await onDeleteHorse(horseId);
       if (activeHorseId === horseId) {
         setActiveHorseId(horses.find(h => h.id !== horseId)?.id);
       }
+      setDeleteConfirm({ show: false, horseId: null, horseName: '' });
+    } catch (err) {
+      console.error('Failed to delete horse:', err);
+      alert('Failed to delete horse. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -458,6 +491,17 @@ export default function MyHorses({ horses, setHorses, activeHorseId, setActiveHo
           </button>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteConfirm.show}
+        onClose={() => setDeleteConfirm({ show: false, horseId: null, horseName: '' })}
+        onConfirm={confirmDelete}
+        title="Delete Horse"
+        message="Are you sure you want to delete this horse? This action cannot be undone."
+        itemName={deleteConfirm.horseName}
+        loading={isDeleting}
+      />
     </div>
   );
 }

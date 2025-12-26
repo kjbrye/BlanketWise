@@ -15,6 +15,37 @@ export default function Dashboard({
   weatherLoading, weatherError, lastUpdated, onRefresh, onLocationClick
 }) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
+
+  // Handle empty state - no horses yet
+  if (!activeHorse || horses.length === 0) {
+    return (
+      <div className="min-h-[calc(100vh-72px)] bg-[#FAF7F2]">
+        <div className="max-w-5xl mx-auto px-6 py-8">
+          <WeatherBar
+            weather={weather}
+            location={location}
+            onLocationClick={onLocationClick}
+          />
+          <div className="mt-8 text-center py-16 bg-white rounded-2xl shadow border border-[rgba(139,69,19,0.1)]">
+            <div className="flex justify-center mb-4">
+              <HorseIcon className="w-20 h-20 text-[#D4A84B]" />
+            </div>
+            <h2 className="font-display text-2xl font-bold text-[#5C4033] mb-2">Welcome to BlanketWise!</h2>
+            <p className="text-[#6B5344] mb-6 max-w-md mx-auto">
+              Add your first horse to get personalized blanketing recommendations based on the weather.
+            </p>
+            <Link
+              to="/horses"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#9CAF88] text-white rounded-xl font-semibold hover:bg-[#7d9470] transition-colors"
+            >
+              <span className="text-xl">+</span> Add Your First Horse
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const recommendation = getRecommendation(weather, activeHorse, settings, blankets, liners);
   const schedule = getDailySchedule(weather, activeHorse, settings, blankets, liners);
 

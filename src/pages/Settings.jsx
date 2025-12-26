@@ -106,24 +106,22 @@ function SettingRow({ iconName, label, description, children }) {
 }
 
 // Main Settings Page
-export default function Settings({ settings, setSettings, location, setLocation }) {
+export default function Settings({ settings, onUpdateSettings, location, setLocation, onLocationClick }) {
   const [editingLocation, setEditingLocation] = useState(false);
   const [tempLocation, setTempLocation] = useState(location);
 
-  const updateSettings = (key, value) => {
-    setSettings({ ...settings, [key]: value });
+  const updateSettingsValue = (key, value) => {
+    onUpdateSettings({ [key]: value });
   };
 
   const updateNotification = (key, value) => {
-    setSettings({
-      ...settings,
+    onUpdateSettings({
       notifications: { ...settings.notifications, [key]: value }
     });
   };
 
   const updateLinerSettings = (key, value) => {
-    setSettings({
-      ...settings,
+    onUpdateSettings({
       liner: { ...(settings.liner || {}), [key]: value }
     });
   };
@@ -194,7 +192,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <select
             value={settings.tempUnit || 'fahrenheit'}
-            onChange={(e) => updateSettings('tempUnit', e.target.value)}
+            onChange={(e) => updateSettingsValue('tempUnit', e.target.value)}
             className="px-4 py-2 rounded-lg border border-[rgba(139,69,19,0.3)] focus:border-[#D4A84B] focus:outline-none bg-white"
           >
             <option value="fahrenheit">Fahrenheit (°F)</option>
@@ -215,7 +213,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.useFeelsLike}
-            onChange={() => updateSettings('useFeelsLike', !settings.useFeelsLike)}
+            onChange={() => updateSettingsValue('useFeelsLike', !settings.useFeelsLike)}
           />
         </SettingRow>
 
@@ -226,7 +224,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.rainPriority}
-            onChange={() => updateSettings('rainPriority', !settings.rainPriority)}
+            onChange={() => updateSettingsValue('rainPriority', !settings.rainPriority)}
           />
         </SettingRow>
 
@@ -237,7 +235,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.exerciseAdjustment}
-            onChange={() => updateSettings('exerciseAdjustment', !settings.exerciseAdjustment)}
+            onChange={() => updateSettingsValue('exerciseAdjustment', !settings.exerciseAdjustment)}
           />
         </SettingRow>
 
@@ -262,7 +260,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
               min="0"
               max="15"
               value={settings.tempBuffer}
-              onChange={(e) => updateSettings('tempBuffer', parseInt(e.target.value))}
+              onChange={(e) => updateSettingsValue('tempBuffer', parseInt(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-[#D4A84B]"
             />
             <div className="flex justify-between text-xs text-[#6B5344] mt-1">
@@ -362,7 +360,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
             </label>
             <select
               value={settings.dailySummaryTime || '6:00 AM'}
-              onChange={(e) => updateSettings('dailySummaryTime', e.target.value)}
+              onChange={(e) => updateSettingsValue('dailySummaryTime', e.target.value)}
               className="px-4 py-2 rounded-lg border border-[rgba(139,69,19,0.3)] focus:border-[#D4A84B] focus:outline-none bg-white"
             >
               <option value="5:00 AM">5:00 AM</option>
@@ -386,7 +384,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.showConfidence !== false}
-            onChange={() => updateSettings('showConfidence', settings.showConfidence === false)}
+            onChange={() => updateSettingsValue('showConfidence', settings.showConfidence === false)}
           />
         </SettingRow>
 
@@ -397,7 +395,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.showExtendedForecast !== false}
-            onChange={() => updateSettings('showExtendedForecast', settings.showExtendedForecast === false)}
+            onChange={() => updateSettingsValue('showExtendedForecast', settings.showExtendedForecast === false)}
           />
         </SettingRow>
 
@@ -408,7 +406,7 @@ export default function Settings({ settings, setSettings, location, setLocation 
         >
           <Toggle
             active={settings.showDailySchedule !== false}
-            onChange={() => updateSettings('showDailySchedule', settings.showDailySchedule === false)}
+            onChange={() => updateSettingsValue('showDailySchedule', settings.showDailySchedule === false)}
           />
         </SettingRow>
       </SettingsSection>

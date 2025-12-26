@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Scale, Droplet, Wind, Thermometer, Check, Package, CloudRain, Leaf, Snowflake } from 'lucide-react';
 import { QuiltedBlanketIcon, LinerIcon } from '../components/icons';
+import { DeleteConfirmModal } from '../components/ui';
 
 // Custom blanket icon (not available in lucide-react)
 function BlanketIcon({ className = "w-5 h-5" }) {
@@ -660,18 +661,42 @@ function AddLinerForm({ onAdd, onCancel }) {
 }
 
 // Main Blanket Inventory Page
-export default function BlanketInventory({ blankets, setBlankets, liners, setLiners, currentBlanketId, setCurrentBlanketId }) {
+export default function BlanketInventory({
+  blankets,
+  liners,
+  currentBlanketId,
+  setCurrentBlanketId,
+  onAddBlanket,
+  onUpdateBlanket,
+  onDeleteBlanket,
+  onAddLiner,
+  onUpdateLiner,
+  onDeleteLiner
+}) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddLinerForm, setShowAddLinerForm] = useState(false);
   const [filterCategory, setFilterCategory] = useState('all');
+  const [deleteBlanketConfirm, setDeleteBlanketConfirm] = useState({ show: false, blanketId: null, blanketName: '' });
+  const [deleteLinerConfirm, setDeleteLinerConfirm] = useState({ show: false, linerId: null, linerName: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleAddBlanket = (newBlanket) => {
-    setBlankets([...blankets, newBlanket]);
-    setShowAddForm(false);
+  const handleAddBlanket = async (newBlanket) => {
+    try {
+      await onAddBlanket(newBlanket);
+      setShowAddForm(false);
+    } catch (err) {
+      console.error('Failed to add blanket:', err);
+      alert('Failed to add blanket. Please try again.');
+    }
   };
 
-  const handleUpdateBlanket = (blanketId, updates) => {
-    setBlankets(blankets.map(b => b.id === blanketId ? { ...b, ...updates } : b));
+  const handleUpdateBlanket = async (blanketId, updates) => {
+    try {
+      await onUpdateBlanket(blanketId, updates);
+    } catch (err) {
+      console.error('Failed to update blanket:', err);
+      alert('Failed to update blanket. Please try again.');
+    }
   };
 
   const handleDeleteBlanket = (blanketId) => {
@@ -679,47 +704,90 @@ export default function BlanketInventory({ blankets, setBlankets, liners, setLin
       alert("You must have at least one blanket.");
       return;
     }
-    if (confirm(`Are you sure you want to delete this blanket?`)) {
-      setBlankets(blankets.filter(b => b.id !== blanketId));
+    const blanket = blankets.find(b => b.id === blanketId);
+    setDeleteBlanketConfirm({ show: true, blanketId, blanketName: blanket?.name || 'this blanket' });
+  };
+
+  const confirmDeleteBlanket = async () => {
+    const { blanketId } = deleteBlanketConfirm;
+    setIsDeleting(true);
+    try {
+      await onDeleteBlanket(blanketId);
       // Unpair any liners that were paired with this blanket
-      if (liners && setLiners) {
-        setLiners(liners.map(l => l.pairedWithBlanketId === blanketId ? { ...l, pairedWithBlanketId: null } : l));
+      if (liners && onUpdateLiner) {
+        for (const liner of liners) {
+          if (liner.pairedWithBlanketId === blanketId) {
+            await onUpdateLiner(liner.id, { pairedWithBlanketId: null });
+          }
+        }
       }
       if (currentBlanketId === blanketId) {
         setCurrentBlanketId(blankets.find(b => b.id !== blanketId)?.id);
       }
+      setDeleteBlanketConfirm({ show: false, blanketId: null, blanketName: '' });
+    } catch (err) {
+      console.error('Failed to delete blanket:', err);
+      alert('Failed to delete blanket. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
-  }
-
-  // Liner handlers
-  const handleAddLiner = (newLiner) => {
-    setLiners([...liners, newLiner]);
-    setShowAddLinerForm(false);
   };
 
-  const handleUpdateLiner = (linerId, updates) => {
-    setLiners(liners.map(l => l.id === linerId ? { ...l, ...updates } : l));
+  // Liner handlers
+  const handleAddLiner = async (newLiner) => {
+    try {
+      await onAddLiner(newLiner);
+      setShowAddLinerForm(false);
+    } catch (err) {
+      console.error('Failed to add liner:', err);
+      alert('Failed to add liner. Please try again.');
+    }
+  };
+
+  const handleUpdateLiner = async (linerId, updates) => {
+    try {
+      await onUpdateLiner(linerId, updates);
+    } catch (err) {
+      console.error('Failed to update liner:', err);
+      alert('Failed to update liner. Please try again.');
+    }
   };
 
   const handleDeleteLiner = (linerId) => {
-    if (confirm(`Are you sure you want to delete this liner?`)) {
-      setLiners(liners.filter(l => l.id !== linerId));
+    const liner = liners.find(l => l.id === linerId);
+    setDeleteLinerConfirm({ show: true, linerId, linerName: liner?.name || 'this liner' });
+  };
+
+  const confirmDeleteLiner = async () => {
+    const { linerId } = deleteLinerConfirm;
+    setIsDeleting(true);
+    try {
+      await onDeleteLiner(linerId);
+      setDeleteLinerConfirm({ show: false, linerId: null, linerName: '' });
+    } catch (err) {
+      console.error('Failed to delete liner:', err);
+      alert('Failed to delete liner. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handlePairLiner = (linerId, blanketId) => {
-    // First, unpair any other liner that was paired with this blanket
-    const updatedLiners = liners.map(l => {
-      if (l.id === linerId) {
-        return { ...l, pairedWithBlanketId: blanketId };
+  const handlePairLiner = async (linerId, blanketId) => {
+    try {
+      // First, unpair any other liner that was paired with this blanket
+      if (blanketId) {
+        for (const liner of liners) {
+          if (liner.pairedWithBlanketId === blanketId && liner.id !== linerId) {
+            await onUpdateLiner(liner.id, { pairedWithBlanketId: null });
+          }
+        }
       }
-      // Unpair other liners from the same blanket
-      if (blanketId && l.pairedWithBlanketId === blanketId) {
-        return { ...l, pairedWithBlanketId: null };
-      }
-      return l;
-    });
-    setLiners(updatedLiners);
+      // Then pair the selected liner
+      await onUpdateLiner(linerId, { pairedWithBlanketId: blanketId });
+    } catch (err) {
+      console.error('Failed to pair liner:', err);
+      alert('Failed to pair liner. Please try again.');
+    }
   };
 
   const filteredBlankets = filterCategory === 'all'
@@ -859,7 +927,7 @@ export default function BlanketInventory({ blankets, setBlankets, liners, setLin
       )}
 
       {/* Liners Section */}
-      {liners && setLiners && (
+      {liners && onAddLiner && (
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -942,6 +1010,28 @@ export default function BlanketInventory({ blankets, setBlankets, liners, setLin
           ))}
         </div>
       </div>
+
+      {/* Delete Blanket Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteBlanketConfirm.show}
+        onClose={() => setDeleteBlanketConfirm({ show: false, blanketId: null, blanketName: '' })}
+        onConfirm={confirmDeleteBlanket}
+        title="Delete Blanket"
+        message="Are you sure you want to delete this blanket? Any paired liners will be unpaired."
+        itemName={deleteBlanketConfirm.blanketName}
+        loading={isDeleting}
+      />
+
+      {/* Delete Liner Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteLinerConfirm.show}
+        onClose={() => setDeleteLinerConfirm({ show: false, linerId: null, linerName: '' })}
+        onConfirm={confirmDeleteLiner}
+        title="Delete Liner"
+        message="Are you sure you want to delete this liner? This action cannot be undone."
+        itemName={deleteLinerConfirm.linerName}
+        loading={isDeleting}
+      />
     </div>
   );
 }

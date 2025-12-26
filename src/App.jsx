@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// Auth
+import { AuthProvider, useAuth, LoginForm, SignUpForm } from './components/auth';
+
+// Hooks
+import { useHorses, useBlankets, useLiners, useSettings } from './hooks';
 
 // Pages
 import MyHorses from './pages/MyHorses';
@@ -11,29 +17,57 @@ import { Navigation, Dashboard } from './components/layout';
 import { LocationSearch } from './components/weather';
 
 // Data & Utils
-import { defaultHorse, defaultBlankets, defaultLiners, defaultWeather, defaultSettings } from './data/defaults';
+import { defaultWeather } from './data/defaults';
 import { fetchWeather, getCurrentPosition, reverseGeocode, DEFAULT_LOCATION } from './utils/weather';
 
 // Auto-refresh interval: 30 minutes
 const REFRESH_INTERVAL = 30 * 60 * 1000;
 
-export default function App() {
-  // Core state
-  const [horses, setHorses] = useState([defaultHorse]);
-  const [activeHorseId, setActiveHorseId] = useState(1);
-  const [blankets, setBlankets] = useState(defaultBlankets);
-  const [liners, setLiners] = useState(defaultLiners);
-  const [currentBlanketId, setCurrentBlanketId] = useState(2);
-  const [settings, setSettings] = useState(defaultSettings);
+// Authenticated App - only rendered when user is logged in
+function AuthenticatedApp() {
+  // Use custom hooks for data (replaces local state)
+  const {
+    horses,
+    loading: horsesLoading,
+    addHorse,
+    updateHorse,
+    deleteHorse,
+  } = useHorses();
 
-  // Weather state
+  const {
+    blankets,
+    loading: blanketsLoading,
+    addBlanket,
+    updateBlanket,
+    deleteBlanket,
+  } = useBlankets();
+
+  const {
+    liners,
+    loading: linersLoading,
+    addLiner,
+    updateLiner,
+    deleteLiner,
+  } = useLiners();
+
+  const {
+    settings,
+    loading: settingsLoading,
+    updateSettings,
+  } = useSettings();
+
+  // Local state for UI selections (not persisted to DB)
+  const [activeHorseId, setActiveHorseId] = useState(null);
+  const [currentBlanketId, setCurrentBlanketId] = useState(null);
+
+  // Weather state (stays local - API driven)
   const [weather, setWeather] = useState(defaultWeather);
   const [forecast, setForecast] = useState([]);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Location state
+  // Location state (stays local)
   const [location, setLocation] = useState(DEFAULT_LOCATION.name);
   const [coordinates, setCoordinates] = useState({
     latitude: DEFAULT_LOCATION.latitude,
@@ -41,9 +75,24 @@ export default function App() {
   });
   const [showLocationSearch, setShowLocationSearch] = useState(false);
 
-  // Ref to track if initial load has happened
+  // Refs
   const initialLoadRef = useRef(false);
   const refreshIntervalRef = useRef(null);
+
+  // Set default active horse when horses load
+  useEffect(() => {
+    if (horses.length > 0 && !activeHorseId) {
+      setActiveHorseId(horses[0].id);
+    }
+  }, [horses, activeHorseId]);
+
+  // Set default current blanket when blankets load
+  useEffect(() => {
+    if (blankets.length > 0 && !currentBlanketId) {
+      const inUse = blankets.find(b => b.status === 'in-use');
+      setCurrentBlanketId(inUse?.id || blankets[0]?.id);
+    }
+  }, [blankets, currentBlanketId]);
 
   // Fetch weather data
   const loadWeather = useCallback(async (lat, lng, showLoading = true) => {
@@ -60,7 +109,6 @@ export default function App() {
     } catch (err) {
       console.error('Failed to fetch weather:', err);
       setWeatherError('Failed to load weather data. Using cached data.');
-      // Keep the last successful data (or default)
     } finally {
       setWeatherLoading(false);
     }
@@ -88,16 +136,13 @@ export default function App() {
 
     async function initializeLocation() {
       try {
-        // Try to get user's current location
         const position = await getCurrentPosition();
         const locationName = await reverseGeocode(position.latitude, position.longitude);
-
         setCoordinates(position);
         setLocation(locationName);
         await loadWeather(position.latitude, position.longitude);
       } catch (err) {
         console.log('Geolocation denied or failed, using default location:', err.message);
-        // Use default location (Madison, WI)
         await loadWeather(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
       }
     }
@@ -118,97 +163,159 @@ export default function App() {
     };
   }, [coordinates, loadWeather]);
 
+  // Show loading state while data loads
+  const isLoading = horsesLoading || blanketsLoading || linersLoading || settingsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FDF8F0] flex items-center justify-center">
+        <div className="text-center">
+          <img
+            src="/BlanketWise-Logo.svg"
+            alt="Loading"
+            className="h-24 w-24 mx-auto mb-4 rounded-full animate-pulse"
+          />
+          <p className="text-[#6B5344]">Loading your data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#FDF8F0]">
+      <Navigation
+        location={location}
+        onLocationClick={() => setShowLocationSearch(true)}
+      />
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Dashboard
+              horses={horses}
+              activeHorseId={activeHorseId}
+              setActiveHorseId={setActiveHorseId}
+              blankets={blankets}
+              liners={liners}
+              currentBlanketId={currentBlanketId}
+              setCurrentBlanketId={setCurrentBlanketId}
+              weather={weather}
+              forecast={forecast}
+              settings={settings}
+              location={location}
+              weatherLoading={weatherLoading}
+              weatherError={weatherError}
+              lastUpdated={lastUpdated}
+              onRefresh={handleRefresh}
+              onLocationClick={() => setShowLocationSearch(true)}
+            />
+          }
+        />
+        <Route
+          path="/horses"
+          element={
+            <MyHorses
+              horses={horses}
+              activeHorseId={activeHorseId}
+              setActiveHorseId={setActiveHorseId}
+              onAddHorse={addHorse}
+              onUpdateHorse={updateHorse}
+              onDeleteHorse={deleteHorse}
+            />
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <BlanketInventory
+              blankets={blankets}
+              liners={liners}
+              currentBlanketId={currentBlanketId}
+              setCurrentBlanketId={setCurrentBlanketId}
+              onAddBlanket={addBlanket}
+              onUpdateBlanket={updateBlanket}
+              onDeleteBlanket={deleteBlanket}
+              onAddLiner={addLiner}
+              onUpdateLiner={updateLiner}
+              onDeleteLiner={deleteLiner}
+            />
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <Settings
+              settings={settings}
+              onUpdateSettings={updateSettings}
+              location={location}
+              setLocation={setLocation}
+              onLocationClick={() => setShowLocationSearch(true)}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* Location Search Modal */}
+      {showLocationSearch && (
+        <LocationSearch
+          currentLocation={location}
+          onLocationSelect={handleLocationSelect}
+          onClose={() => setShowLocationSearch(false)}
+        />
+      )}
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+
+        body {
+          font-family: 'Source Sans 3', sans-serif;
+        }
+
+        .font-display {
+          font-family: 'Playfair Display', serif;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// Auth Gate - shows login/signup for unauthenticated users
+function AuthGate() {
+  const { user, loading } = useAuth();
+  const [showSignUp, setShowSignUp] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDF8F0] flex items-center justify-center">
+        <img
+          src="/BlanketWise-Logo.svg"
+          alt="Loading"
+          className="h-24 w-24 rounded-full animate-pulse"
+        />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return showSignUp ? (
+      <SignUpForm onSwitchToLogin={() => setShowSignUp(false)} />
+    ) : (
+      <LoginForm onSwitchToSignUp={() => setShowSignUp(true)} />
+    );
+  }
+
+  return <AuthenticatedApp />;
+}
+
+// Main App component - wraps everything with providers
+export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#FDF8F0]">
-        <Navigation
-          location={location}
-          onLocationClick={() => setShowLocationSearch(true)}
-        />
-
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Dashboard
-                horses={horses}
-                activeHorseId={activeHorseId}
-                setActiveHorseId={setActiveHorseId}
-                blankets={blankets}
-                liners={liners}
-                currentBlanketId={currentBlanketId}
-                setCurrentBlanketId={setCurrentBlanketId}
-                weather={weather}
-                forecast={forecast}
-                settings={settings}
-                location={location}
-                weatherLoading={weatherLoading}
-                weatherError={weatherError}
-                lastUpdated={lastUpdated}
-                onRefresh={handleRefresh}
-                onLocationClick={() => setShowLocationSearch(true)}
-              />
-            }
-          />
-          <Route
-            path="/horses"
-            element={
-              <MyHorses
-                horses={horses}
-                setHorses={setHorses}
-                activeHorseId={activeHorseId}
-                setActiveHorseId={setActiveHorseId}
-              />
-            }
-          />
-          <Route
-            path="/inventory"
-            element={
-              <BlanketInventory
-                blankets={blankets}
-                setBlankets={setBlankets}
-                liners={liners}
-                setLiners={setLiners}
-                currentBlanketId={currentBlanketId}
-                setCurrentBlanketId={setCurrentBlanketId}
-              />
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <Settings
-                settings={settings}
-                setSettings={setSettings}
-                location={location}
-                setLocation={setLocation}
-                onLocationClick={() => setShowLocationSearch(true)}
-              />
-            }
-          />
-        </Routes>
-
-        {/* Location Search Modal */}
-        {showLocationSearch && (
-          <LocationSearch
-            currentLocation={location}
-            onLocationSelect={handleLocationSelect}
-            onClose={() => setShowLocationSearch(false)}
-          />
-        )}
-
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
-
-          body {
-            font-family: 'Source Sans 3', sans-serif;
-          }
-
-          .font-display {
-            font-family: 'Playfair Display', serif;
-          }
-        `}</style>
-      </div>
+      <AuthProvider>
+        <AuthGate />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
