@@ -32,6 +32,9 @@ export default function RecommendationCard({ recommendation, horse, settings, cu
         <h2 className="font-display text-3xl font-bold mb-1">
           {weightLabels[recommendation.weightNeeded]}
         </h2>
+        {settings?.showConfidence && (
+          <p className="text-white/80 text-sm font-medium">{recommendation.confidence}% confidence</p>
+        )}
         {showLiner && (
           <p className="text-white/90 font-medium">+ {recommendation.recommendedLiner.name}</p>
         )}

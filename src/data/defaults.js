@@ -46,5 +46,6 @@ export const defaultSettings = {
     blanketChange: true,
     severeWeather: true,
     dailySummary: false,
-  }
+  },
+  showConfidence: false,
 };

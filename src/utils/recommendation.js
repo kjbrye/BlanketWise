@@ -87,6 +87,106 @@ function generateReasoning(weather, horse, settings, weight, effectiveTemp, need
   return parts.join(". ") + ".";
 }
 
+/**
+ * Calculate confidence percentage for a recommendation
+ * Factors considered:
+ * - Proximity to temperature thresholds (closer = less confident)
+ * - Precipitation uncertainty (40-60% chance is most uncertain)
+ * - Wind variability (high winds = more uncertainty)
+ * - Blanket match quality (how close to ideal grams)
+ * - Temperature stability (large temp vs feelsLike gap = variable conditions)
+ */
+function calculateConfidence(
+  effectiveTemp,
+  thresholds,
+  weather,
+  gramsNeeded,
+  recommendedGrams,
+  needsWaterproof,
+  hasWaterproofMatch
+) {
+  let confidence = 100;
+
+  // 1. Threshold proximity penalty (up to -20 points)
+  // Check distance to each threshold boundary
+  const { lightMax, mediumMax, heavyMax } = thresholds;
+  const thresholdBoundaries = [lightMax, mediumMax, heavyMax];
+
+  let minDistanceToThreshold = Infinity;
+  for (const threshold of thresholdBoundaries) {
+    const distance = Math.abs(effectiveTemp - threshold);
+    if (distance < minDistanceToThreshold) {
+      minDistanceToThreshold = distance;
+    }
+  }
+
+  // Within 2°F of threshold = high uncertainty, within 5°F = moderate
+  if (minDistanceToThreshold <= 2) {
+    confidence -= 18;
+  } else if (minDistanceToThreshold <= 4) {
+    confidence -= 12;
+  } else if (minDistanceToThreshold <= 6) {
+    confidence -= 6;
+  }
+
+  // 2. Precipitation uncertainty penalty (up to -10 points)
+  // 40-60% precipitation chance is most uncertain
+  const precipChance = weather.precipChance;
+  if (precipChance >= 35 && precipChance <= 65) {
+    // Peak uncertainty around 50%
+    const distanceFrom50 = Math.abs(precipChance - 50);
+    const precipPenalty = Math.round(10 - (distanceFrom50 / 15) * 5);
+    confidence -= precipPenalty;
+  } else if (precipChance >= 20 && precipChance < 35) {
+    confidence -= 3;
+  } else if (precipChance > 65 && precipChance <= 80) {
+    confidence -= 3;
+  }
+
+  // 3. Wind variability penalty (up to -8 points)
+  // High winds are gusty and unpredictable
+  if (weather.wind > 25) {
+    confidence -= 8;
+  } else if (weather.wind > 18) {
+    confidence -= 5;
+  } else if (weather.wind > 12) {
+    confidence -= 2;
+  }
+
+  // 4. Blanket match quality penalty (up to -10 points)
+  if (gramsNeeded > 0 && recommendedGrams !== null) {
+    const gramsDiff = Math.abs(recommendedGrams - gramsNeeded);
+    if (gramsDiff > 150) {
+      confidence -= 10;
+    } else if (gramsDiff > 100) {
+      confidence -= 7;
+    } else if (gramsDiff > 50) {
+      confidence -= 4;
+    } else if (gramsDiff > 25) {
+      confidence -= 2;
+    }
+  }
+
+  // 5. Waterproof mismatch penalty (-8 points)
+  if (needsWaterproof && !hasWaterproofMatch) {
+    confidence -= 8;
+  }
+
+  // 6. Temperature stability penalty (up to -6 points)
+  // Large difference between actual temp and feels-like suggests variable conditions
+  const tempDiff = Math.abs(weather.temp - weather.feelsLike);
+  if (tempDiff > 12) {
+    confidence -= 6;
+  } else if (tempDiff > 8) {
+    confidence -= 4;
+  } else if (tempDiff > 5) {
+    confidence -= 2;
+  }
+
+  // Ensure confidence stays in valid range
+  return Math.max(50, Math.min(99, confidence));
+}
+
 export function getRecommendation(weather, horse, settings, blankets, liners = []) {
   const effectiveTemp = settings.useFeelsLike ? weather.feelsLike : weather.temp;
 
@@ -160,10 +260,6 @@ export function getRecommendation(weather, horse, settings, blankets, liners = [
   // Neck rug needed for strong winds (>20mph) or frigid temps (<10°F)
   const needsNeckRug = weather.wind > 20 || effectiveTemp < 10;
 
-  let confidence = 95;
-  if (effectiveTemp > mediumMax - 3 && effectiveTemp < mediumMax + 3) confidence = 80;
-  if (weather.precipChance > 50) confidence -= 5;
-
   let recommendedBlanket = null;
   let recommendedLiner = null;
   let combinedGrams = 0;
@@ -203,6 +299,18 @@ export function getRecommendation(weather, horse, settings, blankets, liners = [
     recommendedLiner = first.pairedLiner;
     combinedGrams = first.effectiveGrams;
   }
+
+  // Calculate confidence based on multiple factors
+  const hasWaterproofMatch = !needsWaterproof || (recommendedBlanket?.waterproof ?? false);
+  const confidence = calculateConfidence(
+    effectiveTemp,
+    { lightMax, mediumMax, heavyMax },
+    weather,
+    gramsNeeded,
+    combinedGrams || recommendedBlanket?.grams || null,
+    needsWaterproof,
+    hasWaterproofMatch
+  );
 
   const reasoning = generateReasoning(weather, horse, settings, weightNeeded, effectiveTemp, needsNeckRug, recommendedLiner);
 
