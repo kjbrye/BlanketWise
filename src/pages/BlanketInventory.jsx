@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Scale, Droplet, Wind, Thermometer, Check, Package, CloudRain, Leaf, Snowflake } from 'lucide-react';
-import { QuiltedBlanketIcon } from '../components/icons';
+import { QuiltedBlanketIcon, LinerIcon } from '../components/icons';
 
 // Custom blanket icon (not available in lucide-react)
 function BlanketIcon({ className = "w-5 h-5" }) {
@@ -471,7 +471,7 @@ function LinerCard({ liner, blankets, onUpdate, onDelete, onPair }) {
             className="w-12 h-12 rounded-xl flex items-center justify-center shadow-md"
             style={{ backgroundColor: liner.color }}
           >
-            <Leaf className="w-6 h-6 text-white/90" />
+            <LinerIcon className="w-8 h-8 text-white/90" />
           </div>
           <div>
             {isEditing ? (

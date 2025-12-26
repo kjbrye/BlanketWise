@@ -1,5 +1,6 @@
 export { default as BlanketIcon } from './BlanketIcon';
 export { default as QuiltedBlanketIcon } from './QuiltedBlanketIcon';
+export { default as LinerIcon } from './LinerIcon';
 export { default as ClipperIcon } from './ClipperIcon';
 export { default as HorseIcon } from './HorseIcon';
 export { default as WeatherIcon } from './WeatherIcon';
