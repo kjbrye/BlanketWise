@@ -57,7 +57,11 @@ export function useHorses() {
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setHorses(prev => [...prev, horseFromDb(payload.new)]);
+            // Only add if not already present (prevents duplicates with optimistic updates)
+            setHorses(prev => {
+              if (prev.some(h => h.id === payload.new.id)) return prev;
+              return [...prev, horseFromDb(payload.new)];
+            });
           } else if (payload.eventType === 'UPDATE') {
             setHorses(prev =>
               prev.map(h => h.id === payload.new.id ? horseFromDb(payload.new) : h)
@@ -85,7 +89,10 @@ export function useHorses() {
       .single();
 
     if (insertError) throw insertError;
-    return horseFromDb(data);
+
+    const newHorse = horseFromDb(data);
+    setHorses(prev => [...prev, newHorse]);
+    return newHorse;
   };
 
   // Update a horse
