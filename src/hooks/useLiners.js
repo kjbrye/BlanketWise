@@ -57,7 +57,11 @@ export function useLiners() {
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setLiners(prev => [...prev, linerFromDb(payload.new)]);
+            // Only add if not already present (prevents duplicates with optimistic updates)
+            setLiners(prev => {
+              if (prev.some(l => l.id === payload.new.id)) return prev;
+              return [...prev, linerFromDb(payload.new)];
+            });
           } else if (payload.eventType === 'UPDATE') {
             setLiners(prev =>
               prev.map(l => l.id === payload.new.id ? linerFromDb(payload.new) : l)
@@ -85,7 +89,10 @@ export function useLiners() {
       .single();
 
     if (insertError) throw insertError;
-    return linerFromDb(data);
+
+    const newLiner = linerFromDb(data);
+    setLiners(prev => [...prev, newLiner]);
+    return newLiner;
   };
 
   // Update a liner

@@ -57,7 +57,11 @@ export function useBlankets() {
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setBlankets(prev => [...prev, blanketFromDb(payload.new)]);
+            // Only add if not already present (prevents duplicates with optimistic updates)
+            setBlankets(prev => {
+              if (prev.some(b => b.id === payload.new.id)) return prev;
+              return [...prev, blanketFromDb(payload.new)];
+            });
           } else if (payload.eventType === 'UPDATE') {
             setBlankets(prev =>
               prev.map(b => b.id === payload.new.id ? blanketFromDb(payload.new) : b)
@@ -85,7 +89,10 @@ export function useBlankets() {
       .single();
 
     if (insertError) throw insertError;
-    return blanketFromDb(data);
+
+    const newBlanket = blanketFromDb(data);
+    setBlankets(prev => [...prev, newBlanket]);
+    return newBlanket;
   };
 
   // Update a blanket

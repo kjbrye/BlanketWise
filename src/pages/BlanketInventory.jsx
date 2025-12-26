@@ -970,7 +970,7 @@ export default function BlanketInventory({
           ) : !showAddLinerForm && (
             <div className="text-center py-8 bg-white rounded-2xl border border-[rgba(139,69,19,0.15)]">
               <div className="flex justify-center mb-3 text-[#9CAF88]">
-                <Leaf className="w-12 h-12" />
+                <LinerIcon className="w-12 h-12" />
               </div>
               <h3 className="font-display text-xl font-semibold text-[#5C4033] mb-2">No liners yet</h3>
               <p className="text-[#6B5344] mb-4 text-sm">Add liners to pair with your blanket shells for extra warmth</p>
