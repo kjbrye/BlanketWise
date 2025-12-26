@@ -49,4 +49,5 @@ export const defaultSettings = {
     dailySummary: false,
   },
   showConfidence: false,
+  currentBlanketId: null,
 };

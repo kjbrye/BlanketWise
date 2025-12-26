@@ -168,6 +168,7 @@ export function settingsFromDb(dbSettings) {
       dailySummary: dbSettings.notifications_daily_summary ?? false,
     },
     showConfidence: dbSettings.show_confidence ?? false,
+    currentBlanketId: dbSettings.current_blanket_id ?? null,
   };
 }
 
@@ -186,6 +187,7 @@ export function settingsToDb(settings) {
     notifications_severe_weather: settings.notifications?.severeWeather ?? true,
     notifications_daily_summary: settings.notifications?.dailySummary ?? false,
     show_confidence: settings.showConfidence ?? false,
+    current_blanket_id: settings.currentBlanketId ?? null,
   };
 }
 

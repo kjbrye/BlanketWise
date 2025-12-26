@@ -58,7 +58,12 @@ function AuthenticatedApp() {
 
   // Local state for UI selections (not persisted to DB)
   const [activeHorseId, setActiveHorseId] = useState(null);
-  const [currentBlanketId, setCurrentBlanketId] = useState(null);
+
+  // Current blanket selection is persisted via settings
+  const currentBlanketId = settings.currentBlanketId;
+  const setCurrentBlanketId = useCallback((blanketId) => {
+    updateSettings({ currentBlanketId: blanketId });
+  }, [updateSettings]);
 
   // Weather state (stays local - API driven)
   const [weather, setWeather] = useState(defaultWeather);
@@ -86,13 +91,20 @@ function AuthenticatedApp() {
     }
   }, [horses, activeHorseId]);
 
-  // Set default current blanket when blankets load
+  // Set default current blanket when blankets load (only if not already persisted)
   useEffect(() => {
     if (blankets.length > 0 && !currentBlanketId) {
+      // Check if persisted blanket still exists, otherwise use first blanket
       const inUse = blankets.find(b => b.status === 'in-use');
       setCurrentBlanketId(inUse?.id || blankets[0]?.id);
+    } else if (currentBlanketId && blankets.length > 0) {
+      // Verify persisted blanket still exists
+      const blanketExists = blankets.some(b => b.id === currentBlanketId);
+      if (!blanketExists) {
+        setCurrentBlanketId(blankets[0]?.id || null);
+      }
     }
-  }, [blankets, currentBlanketId]);
+  }, [blankets, currentBlanketId, setCurrentBlanketId]);
 
   // Fetch weather data
   const loadWeather = useCallback(async (lat, lng, showLoading = true) => {
