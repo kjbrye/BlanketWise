@@ -108,6 +108,8 @@ export function useHorses() {
       .eq('user_id', user.id);
 
     if (updateError) throw updateError;
+
+    setHorses(prev => prev.map(h => h.id === horseId ? { ...h, ...updates } : h));
   };
 
   // Delete a horse
@@ -121,6 +123,8 @@ export function useHorses() {
       .eq('user_id', user.id);
 
     if (deleteError) throw deleteError;
+
+    setHorses(prev => prev.filter(h => h.id !== horseId));
   };
 
   return {

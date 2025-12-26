@@ -108,6 +108,8 @@ export function useBlankets() {
       .eq('user_id', user.id);
 
     if (updateError) throw updateError;
+
+    setBlankets(prev => prev.map(b => b.id === blanketId ? { ...b, ...updates } : b));
   };
 
   // Delete a blanket
@@ -121,6 +123,8 @@ export function useBlankets() {
       .eq('user_id', user.id);
 
     if (deleteError) throw deleteError;
+
+    setBlankets(prev => prev.filter(b => b.id !== blanketId));
   };
 
   // Set blanket as currently on a specific horse

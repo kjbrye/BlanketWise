@@ -108,6 +108,8 @@ export function useLiners() {
       .eq('user_id', user.id);
 
     if (updateError) throw updateError;
+
+    setLiners(prev => prev.map(l => l.id === linerId ? { ...l, ...updates } : l));
   };
 
   // Delete a liner
@@ -121,6 +123,8 @@ export function useLiners() {
       .eq('user_id', user.id);
 
     if (deleteError) throw deleteError;
+
+    setLiners(prev => prev.filter(l => l.id !== linerId));
   };
 
   // Pair liner with a blanket
