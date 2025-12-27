@@ -169,6 +169,9 @@ export function settingsFromDb(dbSettings) {
     },
     showConfidence: dbSettings.show_confidence ?? false,
     currentBlanketId: dbSettings.current_blanket_id ?? null,
+    locationLat: dbSettings.location_lat ?? null,
+    locationLng: dbSettings.location_lng ?? null,
+    locationName: dbSettings.location_name ?? null,
   };
 }
 
@@ -188,6 +191,9 @@ export function settingsToDb(settings) {
     notifications_daily_summary: settings.notifications?.dailySummary ?? false,
     show_confidence: settings.showConfidence ?? false,
     current_blanket_id: settings.currentBlanketId ?? null,
+    location_lat: settings.locationLat ?? null,
+    location_lng: settings.locationLng ?? null,
+    location_name: settings.locationName ?? null,
   };
 }
 

@@ -31,6 +31,9 @@ create table user_settings (
   notifications_daily_summary boolean default false,
   show_confidence boolean default false,
   current_blanket_id uuid,  -- Stores the user's currently selected blanket for UI
+  location_lat decimal,
+  location_lng decimal,
+  location_name text,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );

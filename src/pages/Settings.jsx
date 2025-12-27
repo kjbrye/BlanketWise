@@ -106,9 +106,8 @@ function SettingRow({ iconName, label, description, children }) {
 }
 
 // Main Settings Page
-export default function Settings({ settings, onUpdateSettings, location, setLocation, onLocationClick }) {
-  const [editingLocation, setEditingLocation] = useState(false);
-  const [tempLocation, setTempLocation] = useState(location);
+export default function Settings({ settings, onUpdateSettings, location, setLocation, onLocationClick, onUseCurrentLocation }) {
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   const updateSettingsValue = (key, value) => {
     onUpdateSettings({ [key]: value });
@@ -126,9 +125,13 @@ export default function Settings({ settings, onUpdateSettings, location, setLoca
     });
   };
 
-  const handleLocationSave = () => {
-    setLocation(tempLocation);
-    setEditingLocation(false);
+  const handleUseCurrentLocation = async () => {
+    setGettingLocation(true);
+    try {
+      await onUseCurrentLocation();
+    } finally {
+      setGettingLocation(false);
+    }
   };
 
   return (
@@ -149,40 +152,24 @@ export default function Settings({ settings, onUpdateSettings, location, setLoca
           label="Current Location"
           description="Weather data is fetched for this location"
         >
-          {editingLocation ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={tempLocation}
-                onChange={(e) => setTempLocation(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-[rgba(139,69,19,0.3)] focus:border-[#D4A84B] focus:outline-none w-48"
-                placeholder="City, State"
-              />
-              <button
-                onClick={handleLocationSave}
-                className="px-4 py-2 bg-[#9CAF88] text-white rounded-lg hover:bg-[#7d9470] transition-colors"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setTempLocation(location);
-                  setEditingLocation(false);
-                }}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
+          <div className="flex flex-col gap-2">
             <button
-              onClick={() => setEditingLocation(true)}
+              onClick={onLocationClick}
               className="flex items-center gap-2 px-4 py-2 bg-[#FDF8F0] text-[#8B4513] rounded-lg hover:bg-[#D4A84B]/20 transition-colors"
             >
+              <Icon name="map-pin" className="w-4 h-4" />
               {location}
-              <Icon name="pencil" className="w-4 h-4" />
+              <Icon name="pencil" className="w-4 h-4 ml-auto" />
             </button>
-          )}
+            <button
+              onClick={handleUseCurrentLocation}
+              disabled={gettingLocation}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#9CAF88] text-white rounded-lg hover:bg-[#7d9470] transition-colors disabled:opacity-50"
+            >
+              <Icon name="navigation" className="w-4 h-4" />
+              {gettingLocation ? 'Getting location...' : 'Use Current Location'}
+            </button>
+          </div>
         </SettingRow>
 
         <SettingRow

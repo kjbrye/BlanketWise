@@ -50,4 +50,7 @@ export const defaultSettings = {
   },
   showConfidence: false,
   currentBlanketId: null,
+  locationLat: null,
+  locationLng: null,
+  locationName: null,
 };

@@ -126,41 +126,71 @@ function AuthenticatedApp() {
     }
   }, []);
 
-  // Handle location selection from search
+  // Handle location selection from search (persists to settings)
   const handleLocationSelect = useCallback((newLocation) => {
     setLocation(newLocation.name);
     setCoordinates({
       latitude: newLocation.latitude,
       longitude: newLocation.longitude
     });
+    // Persist location to settings
+    updateSettings({
+      locationLat: newLocation.latitude,
+      locationLng: newLocation.longitude,
+      locationName: newLocation.name,
+    });
     loadWeather(newLocation.latitude, newLocation.longitude);
-  }, [loadWeather]);
+  }, [loadWeather, updateSettings]);
+
+  // Handle "Use Current Location" button
+  const handleUseCurrentLocation = useCallback(async () => {
+    setWeatherLoading(true);
+    try {
+      const position = await getCurrentPosition();
+      const locationName = await reverseGeocode(position.latitude, position.longitude);
+      setCoordinates(position);
+      setLocation(locationName);
+      // Persist to settings
+      updateSettings({
+        locationLat: position.latitude,
+        locationLng: position.longitude,
+        locationName: locationName,
+      });
+      await loadWeather(position.latitude, position.longitude);
+    } catch (err) {
+      console.error('Failed to get current location:', err);
+      setWeatherError('Unable to get current location. Please check your browser permissions.');
+      setWeatherLoading(false);
+    }
+  }, [loadWeather, updateSettings]);
 
   // Manual refresh
   const handleRefresh = useCallback(() => {
     loadWeather(coordinates.latitude, coordinates.longitude);
   }, [coordinates, loadWeather]);
 
-  // Initialize geolocation and weather on mount
+  // Initialize location and weather on mount
   useEffect(() => {
     if (initialLoadRef.current) return;
     initialLoadRef.current = true;
 
     async function initializeLocation() {
-      try {
-        const position = await getCurrentPosition();
-        const locationName = await reverseGeocode(position.latitude, position.longitude);
-        setCoordinates(position);
-        setLocation(locationName);
-        await loadWeather(position.latitude, position.longitude);
-      } catch (err) {
-        console.log('Geolocation denied or failed, using default location:', err.message);
+      // Check if user has a saved location in settings
+      if (settings.locationLat && settings.locationLng && settings.locationName) {
+        setCoordinates({
+          latitude: settings.locationLat,
+          longitude: settings.locationLng,
+        });
+        setLocation(settings.locationName);
+        await loadWeather(settings.locationLat, settings.locationLng);
+      } else {
+        // No saved location - use default (don't auto-request geolocation)
         await loadWeather(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
       }
     }
 
     initializeLocation();
-  }, [loadWeather]);
+  }, [loadWeather, settings.locationLat, settings.locationLng, settings.locationName]);
 
   // Set up auto-refresh interval
   useEffect(() => {
@@ -263,6 +293,7 @@ function AuthenticatedApp() {
               location={location}
               setLocation={setLocation}
               onLocationClick={() => setShowLocationSearch(true)}
+              onUseCurrentLocation={handleUseCurrentLocation}
             />
           }
         />
