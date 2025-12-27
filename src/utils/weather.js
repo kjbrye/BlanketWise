@@ -31,7 +31,8 @@ function mapWeatherCode(code) {
  */
 function getDayName(dateString, index) {
   if (index === 0) return 'Today';
-  const date = new Date(dateString);
+  // Append time to avoid timezone issues (dateString is "YYYY-MM-DD" which JS parses as UTC midnight)
+  const date = new Date(dateString + 'T12:00:00');
   return date.toLocaleDateString('en-US', { weekday: 'short' });
 }
 

@@ -340,11 +340,24 @@ export function getRecommendation(weather, horse, settings, blankets, liners = [
 }
 
 export function getDailySchedule(weather, horse, settings, blankets, liners = []) {
+  // Determine which time block is current based on hour
+  const currentHour = new Date().getHours();
+  let currentBlock;
+  if (currentHour >= 6 && currentHour < 12) {
+    currentBlock = "morning";
+  } else if (currentHour >= 12 && currentHour < 18) {
+    currentBlock = "afternoon";
+  } else if (currentHour >= 18 && currentHour < 21) {
+    currentBlock = "evening";
+  } else {
+    currentBlock = "overnight";
+  }
+
   const times = [
-    { label: "Morning (6 AM)", iconType: "morning", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2 },
-    { label: "Afternoon (Now)", iconType: "afternoon", temp: weather.temp, feelsLike: weather.feelsLike, current: true },
-    { label: "Evening (6 PM)", iconType: "evening", temp: weather.temp - 6, feelsLike: weather.feelsLike - 8 },
-    { label: "Overnight", iconType: "overnight", temp: weather.tonightLow, feelsLike: weather.tonightLow - 4 },
+    { label: "Morning (6 AM)", iconType: "morning", temp: weather.tonightLow + 5, feelsLike: weather.tonightLow + 2, current: currentBlock === "morning" },
+    { label: "Afternoon (12 PM)", iconType: "afternoon", temp: weather.temp, feelsLike: weather.feelsLike, current: currentBlock === "afternoon" },
+    { label: "Evening (6 PM)", iconType: "evening", temp: weather.temp - 6, feelsLike: weather.feelsLike - 8, current: currentBlock === "evening" },
+    { label: "Overnight", iconType: "overnight", temp: weather.tonightLow, feelsLike: weather.tonightLow - 4, current: currentBlock === "overnight" },
   ];
 
   return times.map(time => {
