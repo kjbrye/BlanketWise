@@ -12,13 +12,42 @@ const AuthContext = createContext({
   updateProfile: async () => {},
 });
 
+// Check if there's a stored session in localStorage (synchronous)
+function hasStoredSession() {
+  try {
+    const key = 'sb-pjbpzycakmzgnyvvlwws-auth-token';
+    const stored = localStorage.getItem(key);
+    return stored !== null;
+  } catch {
+    return false;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Only show loading if there might be a session to restore
+  const [loading, setLoading] = useState(hasStoredSession);
 
   useEffect(() => {
-    // Check active session on mount
+    // If no stored session, skip the network check - show login immediately
+    if (!hasStoredSession()) {
+      setLoading(false);
+      // Still set up the listener for future auth events
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          } else {
+            setProfile(null);
+          }
+        }
+      );
+      return () => subscription.unsubscribe();
+    }
+
+    // There's a stored session - verify it with Supabase
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
