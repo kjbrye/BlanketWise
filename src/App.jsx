@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Auth
@@ -7,12 +7,12 @@ import { AuthProvider, useAuth, LoginForm, SignUpForm } from './components/auth'
 // Hooks
 import { useHorses, useBlankets, useLiners, useSettings } from './hooks';
 
-// Pages
-import MyHorses from './pages/MyHorses';
-import BlanketInventory from './pages/BlanketInventory';
-import Settings from './pages/Settings';
+// Lazy-loaded pages (code splitting)
+const MyHorses = lazy(() => import('./pages/MyHorses'));
+const BlanketInventory = lazy(() => import('./pages/BlanketInventory'));
+const Settings = lazy(() => import('./pages/Settings'));
 
-// Components
+// Components (loaded eagerly - needed for main dashboard)
 import { Navigation, Dashboard } from './components/layout';
 import { LocationSearch } from './components/weather';
 
@@ -22,6 +22,15 @@ import { fetchWeather, getCurrentPosition, reverseGeocode, DEFAULT_LOCATION } fr
 
 // Auto-refresh interval: 30 minutes
 const REFRESH_INTERVAL = 30 * 60 * 1000;
+
+// Loading fallback for lazy-loaded pages
+function PageLoader() {
+  return (
+    <div className="min-h-[calc(100vh-72px)] bg-[#FAF7F2] flex items-center justify-center">
+      <div className="animate-pulse text-[#6B5344]">Loading...</div>
+    </div>
+  );
+}
 
 // Authenticated App - only rendered when user is logged in
 function AuthenticatedApp() {
@@ -169,28 +178,34 @@ function AuthenticatedApp() {
     loadWeather(coordinates.latitude, coordinates.longitude);
   }, [coordinates, loadWeather]);
 
-  // Initialize location and weather on mount
+  // Start weather fetch immediately with default location (don't wait for settings)
   useEffect(() => {
     if (initialLoadRef.current) return;
     initialLoadRef.current = true;
+    loadWeather(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
+  }, [loadWeather]);
 
-    async function initializeLocation() {
-      // Check if user has a saved location in settings
-      if (settings.locationLat && settings.locationLng && settings.locationName) {
+  // Once settings loads, update to saved location if different from default
+  const settingsLocationRef = useRef(false);
+  useEffect(() => {
+    if (settingsLocationRef.current) return;
+    if (settings.locationLat && settings.locationLng && settings.locationName) {
+      settingsLocationRef.current = true;
+      // Only re-fetch if saved location differs from default
+      if (settings.locationLat !== DEFAULT_LOCATION.latitude ||
+          settings.locationLng !== DEFAULT_LOCATION.longitude) {
         setCoordinates({
           latitude: settings.locationLat,
           longitude: settings.locationLng,
         });
         setLocation(settings.locationName);
-        await loadWeather(settings.locationLat, settings.locationLng);
+        loadWeather(settings.locationLat, settings.locationLng);
       } else {
-        // No saved location - use default (don't auto-request geolocation)
-        await loadWeather(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
+        // Same as default, just update the display name
+        setLocation(settings.locationName);
       }
     }
-
-    initializeLocation();
-  }, [loadWeather, settings.locationLat, settings.locationLng, settings.locationName]);
+  }, [settings.locationLat, settings.locationLng, settings.locationName, loadWeather]);
 
   // Set up auto-refresh interval
   useEffect(() => {
@@ -205,10 +220,9 @@ function AuthenticatedApp() {
     };
   }, [coordinates, loadWeather]);
 
-  // Show loading state while data loads
-  const isLoading = horsesLoading || blanketsLoading || linersLoading || settingsLoading;
-
-  if (isLoading) {
+  // Only block on settings - it's needed for location/weather initialization
+  // Other data can load progressively with skeleton states
+  if (settingsLoading) {
     return (
       <div className="min-h-screen bg-[#FDF8F0] flex items-center justify-center">
         <div className="text-center">
@@ -217,7 +231,7 @@ function AuthenticatedApp() {
             alt="Loading"
             className="h-24 w-24 mx-auto mb-4 rounded-full animate-pulse"
           />
-          <p className="text-[#6B5344]">Loading your data...</p>
+          <p className="text-[#6B5344]">Loading...</p>
         </div>
       </div>
     );
@@ -251,50 +265,58 @@ function AuthenticatedApp() {
               lastUpdated={lastUpdated}
               onRefresh={handleRefresh}
               onLocationClick={() => setShowLocationSearch(true)}
+              horsesLoading={horsesLoading}
+              blanketsLoading={blanketsLoading}
             />
           }
         />
         <Route
           path="/horses"
           element={
-            <MyHorses
-              horses={horses}
-              activeHorseId={activeHorseId}
-              setActiveHorseId={setActiveHorseId}
-              onAddHorse={addHorse}
-              onUpdateHorse={updateHorse}
-              onDeleteHorse={deleteHorse}
-            />
+            <Suspense fallback={<PageLoader />}>
+              <MyHorses
+                horses={horses}
+                activeHorseId={activeHorseId}
+                setActiveHorseId={setActiveHorseId}
+                onAddHorse={addHorse}
+                onUpdateHorse={updateHorse}
+                onDeleteHorse={deleteHorse}
+              />
+            </Suspense>
           }
         />
         <Route
           path="/inventory"
           element={
-            <BlanketInventory
-              blankets={blankets}
-              liners={liners}
-              currentBlanketId={currentBlanketId}
-              setCurrentBlanketId={setCurrentBlanketId}
-              onAddBlanket={addBlanket}
-              onUpdateBlanket={updateBlanket}
-              onDeleteBlanket={deleteBlanket}
-              onAddLiner={addLiner}
-              onUpdateLiner={updateLiner}
-              onDeleteLiner={deleteLiner}
-            />
+            <Suspense fallback={<PageLoader />}>
+              <BlanketInventory
+                blankets={blankets}
+                liners={liners}
+                currentBlanketId={currentBlanketId}
+                setCurrentBlanketId={setCurrentBlanketId}
+                onAddBlanket={addBlanket}
+                onUpdateBlanket={updateBlanket}
+                onDeleteBlanket={deleteBlanket}
+                onAddLiner={addLiner}
+                onUpdateLiner={updateLiner}
+                onDeleteLiner={deleteLiner}
+              />
+            </Suspense>
           }
         />
         <Route
           path="/settings"
           element={
-            <Settings
-              settings={settings}
-              onUpdateSettings={updateSettings}
-              location={location}
-              setLocation={setLocation}
-              onLocationClick={() => setShowLocationSearch(true)}
-              onUseCurrentLocation={handleUseCurrentLocation}
-            />
+            <Suspense fallback={<PageLoader />}>
+              <Settings
+                settings={settings}
+                onUpdateSettings={updateSettings}
+                location={location}
+                setLocation={setLocation}
+                onLocationClick={() => setShowLocationSearch(true)}
+                onUseCurrentLocation={handleUseCurrentLocation}
+              />
+            </Suspense>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

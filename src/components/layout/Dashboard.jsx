@@ -12,9 +12,49 @@ export default function Dashboard({
   horses, activeHorseId, setActiveHorseId,
   blankets, liners = [], currentBlanketId, setCurrentBlanketId,
   weather, forecast = [], settings, location,
-  weatherLoading, weatherError, lastUpdated, onRefresh, onLocationClick
+  weatherLoading, weatherError, lastUpdated, onRefresh, onLocationClick,
+  horsesLoading = false, blanketsLoading = false
 }) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
+
+  // Show loading skeleton while horses are loading
+  if (horsesLoading) {
+    return (
+      <div className="min-h-[calc(100vh-72px)] bg-[#FAF7F2]">
+        <div className="max-w-5xl mx-auto px-6 py-8">
+          <WeatherBar
+            weather={weather}
+            location={location}
+            onLocationClick={onLocationClick}
+          />
+          <div className="mt-6 grid grid-cols-[1fr_280px] gap-6">
+            {/* Left column skeleton */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl p-6 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+                <div className="h-20 bg-gray-200 rounded mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+              </div>
+              <div className="bg-white rounded-xl p-4 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/4 mb-3" />
+                <div className="h-16 bg-gray-200 rounded" />
+              </div>
+            </div>
+            {/* Right column skeleton */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl p-4 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
+                <div className="space-y-2">
+                  <div className="h-10 bg-gray-200 rounded" />
+                  <div className="h-10 bg-gray-200 rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle empty state - no horses yet
   if (!activeHorse || horses.length === 0) {
@@ -212,30 +252,38 @@ export default function Dashboard({
             {/* Current Blanket */}
             <div className="bg-white rounded-xl border border-[rgba(139,69,19,0.1)] p-4">
               <h3 className="text-sm font-medium text-[#5C4033] mb-3">Blanket Inventory</h3>
-              <div className="space-y-2">
-                {blankets.slice(0, 3).map(blanket => (
-                  <button
-                    key={blanket.id}
-                    onClick={() => setCurrentBlanketId(blanket.id)}
-                    className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
-                      blanket.id === currentBlanketId
-                        ? 'bg-[#9CAF88]/15 border border-[#9CAF88]'
-                        : 'hover:bg-[#FDF8F0]'
-                    }`}
-                  >
-                    <div className="w-2 h-8 rounded" style={{ backgroundColor: blanket.color }} />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-[#5C4033] truncate">{blanket.name}</div>
-                      <div className="text-xs text-[#6B5344]">{blanket.grams}g</div>
-                    </div>
-                    {blanket.id === currentBlanketId && (
-                      <span className="text-[#9CAF88]">
-                        <Check className="w-4 h-4" />
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
+              {blanketsLoading ? (
+                <div className="space-y-2 animate-pulse">
+                  <div className="h-10 bg-gray-200 rounded" />
+                  <div className="h-10 bg-gray-200 rounded" />
+                  <div className="h-10 bg-gray-200 rounded" />
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {blankets.slice(0, 3).map(blanket => (
+                    <button
+                      key={blanket.id}
+                      onClick={() => setCurrentBlanketId(blanket.id)}
+                      className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
+                        blanket.id === currentBlanketId
+                          ? 'bg-[#9CAF88]/15 border border-[#9CAF88]'
+                          : 'hover:bg-[#FDF8F0]'
+                      }`}
+                    >
+                      <div className="w-2 h-8 rounded" style={{ backgroundColor: blanket.color }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-[#5C4033] truncate">{blanket.name}</div>
+                        <div className="text-xs text-[#6B5344]">{blanket.grams}g</div>
+                      </div>
+                      {blanket.id === currentBlanketId && (
+                        <span className="text-[#9CAF88]">
+                          <Check className="w-4 h-4" />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
               <Link
                 to="/inventory"
                 className="block text-center text-xs text-[#8B4513] hover:text-[#5C4033] mt-3 transition-colors"

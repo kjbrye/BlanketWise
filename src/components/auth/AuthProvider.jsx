@@ -42,10 +42,6 @@ export function AuthProvider({ children }) {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          // Small delay to allow trigger to create profile
-          if (event === 'SIGNED_IN') {
-            await new Promise(resolve => setTimeout(resolve, 500));
-          }
           await fetchProfile(session.user.id);
         } else {
           setProfile(null);
