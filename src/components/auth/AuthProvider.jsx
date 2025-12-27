@@ -12,15 +12,35 @@ const AuthContext = createContext({
   updateProfile: async () => {},
 });
 
+const STORAGE_KEY = 'sb-pjbpzycakmzgnyvvlwws-auth-token';
+const SESSION_TIMEOUT_MS = 3000; // Give up after 3 seconds
+
 // Check if there's a stored session in localStorage (synchronous)
 function hasStoredSession() {
   try {
-    const key = 'sb-pjbpzycakmzgnyvvlwws-auth-token';
-    const stored = localStorage.getItem(key);
-    return stored !== null;
+    return localStorage.getItem(STORAGE_KEY) !== null;
   } catch {
     return false;
   }
+}
+
+// Clear stale session from localStorage
+function clearStoredSession() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Ignore errors
+  }
+}
+
+// Wrap a promise with a timeout
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Session verification timed out')), ms)
+    )
+  ]);
 }
 
 export function AuthProvider({ children }) {
@@ -47,10 +67,13 @@ export function AuthProvider({ children }) {
       return () => subscription.unsubscribe();
     }
 
-    // There's a stored session - verify it with Supabase
+    // There's a stored session - verify it with Supabase (with timeout)
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await withTimeout(
+          supabase.auth.getSession(),
+          SESSION_TIMEOUT_MS
+        );
         setUser(session?.user ?? null);
 
         if (session?.user) {
@@ -58,6 +81,8 @@ export function AuthProvider({ children }) {
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
+        // If timed out or failed, clear stale session and show login
+        clearStoredSession();
       } finally {
         setLoading(false);
       }
