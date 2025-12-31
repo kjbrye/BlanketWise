@@ -7,4 +7,3 @@ dist
 
 # Supabase temp files
 supabase/.temp/**
-supabase/.temp/**
