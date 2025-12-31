@@ -165,11 +165,11 @@ export function validate(schema, data) {
   if (result.success) {
     return { success: true, data: result.data };
   }
-  // Get the first error message
-  const firstError = result.error.errors[0];
+  // Get the first error message (with safe access)
+  const firstError = result.error?.errors?.[0];
   return {
     success: false,
-    error: firstError?.message || 'Validation failed',
+    error: firstError?.message || result.error?.message || 'Validation failed',
   };
 }
 
