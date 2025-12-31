@@ -37,16 +37,16 @@ export default defineConfig({
         ],
         screenshots: [
           {
-            src: 'screenshot-desktop.png',
+            src: 'screenshot-desktop.webp',
             sizes: '1280x720',
-            type: 'image/png',
+            type: 'image/webp',
             form_factor: 'wide',
             label: 'BlanketWise desktop view'
           },
           {
-            src: 'screenshot-mobile.png',
+            src: 'screenshot-mobile.webp',
             sizes: '390x844',
-            type: 'image/png',
+            type: 'image/webp',
             form_factor: 'narrow',
             label: 'BlanketWise mobile view'
           }
