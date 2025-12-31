@@ -217,7 +217,7 @@ export default function Dashboard({
                   <div className="grid grid-cols-7 divide-x divide-[rgba(139,69,19,0.1)] min-w-[420px]">
                     {forecastWithRecs.map((day, i) => (
                       <div
-                        key={day.day || `forecast-${i}`}
+                        key={day.day}
                         className={`py-3 px-2 text-center ${i === 0 ? 'bg-[#D4A84B]/10' : ''}`}
                       >
                         <div className="text-xs text-[#6B5344]">{day.day}</div>

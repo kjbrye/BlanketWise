@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { Wind, Droplet, Moon, MapPin } from 'lucide-react';
 import { WeatherIcon } from '../icons';
 
-export default function WeatherBar({ weather, location, onLocationClick }) {
+export default memo(function WeatherBar({ weather, location, onLocationClick }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 px-4 bg-white/60 rounded-xl mb-6 gap-3">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
@@ -35,4 +36,4 @@ export default function WeatherBar({ weather, location, onLocationClick }) {
       </button>
     </div>
   );
-}
+});

@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { Check } from 'lucide-react';
 import { BlanketIcon } from '../icons';
 
-export default function RecommendationCard({ recommendation, horse, settings, currentBlanketId, setCurrentBlanketId }) {
+export default memo(function RecommendationCard({ recommendation, horse, settings, currentBlanketId, setCurrentBlanketId }) {
   const showCombinedWeight = settings?.liner?.showCombinedWeight !== false;
   const showLiner = recommendation.recommendedLiner && showCombinedWeight;
   const weightLabels = {
@@ -73,4 +74,4 @@ export default function RecommendationCard({ recommendation, horse, settings, cu
       </div>
     </div>
   );
-}
+});
