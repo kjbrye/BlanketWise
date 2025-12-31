@@ -18,6 +18,46 @@ export default function Dashboard({
 }) {
   const activeHorse = horses.find(h => h.id === activeHorseId) || horses[0];
 
+  // Memoize expensive recommendation calculations (must be called before conditional returns)
+  const recommendation = useMemo(
+    () => activeHorse ? getRecommendation(weather, activeHorse, settings, blankets, liners) : null,
+    [weather, activeHorse, settings, blankets, liners]
+  );
+
+  const schedule = useMemo(
+    () => activeHorse ? getDailySchedule(weather, activeHorse, settings, blankets, liners) : [],
+    [weather, activeHorse, settings, blankets, liners]
+  );
+
+  // Compute recommendations for each forecast day based on high temp
+  const forecastWithRecs = useMemo(() => {
+    if (!activeHorse) return [];
+    return forecast.map(day => {
+      const dayWeather = {
+        ...weather,
+        temp: day.high,
+        feelsLike: day.high - 4,
+        precipChance: day.precipChance || 0,
+        condition: day.condition
+      };
+      const rec = getRecommendation(dayWeather, activeHorse, settings, blankets, liners);
+      return { ...day, rec: recLabels[rec.weightNeeded] };
+    });
+  }, [forecast, weather, activeHorse, settings, blankets, liners]);
+
+  // Find upcoming cold snap for weather alert
+  const coldDay = forecast.find(day => day.low <= 20);
+
+  // Format last updated time
+  const formatLastUpdated = () => {
+    if (!lastUpdated) return null;
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdated) / 60000); // minutes
+    if (diff < 1) return 'Just now';
+    if (diff < 60) return `${diff}m ago`;
+    return lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  };
+
   // Show loading skeleton while horses are loading
   if (horsesLoading) {
     return (
@@ -86,45 +126,6 @@ export default function Dashboard({
       </div>
     );
   }
-
-  // Memoize expensive recommendation calculations
-  const recommendation = useMemo(
-    () => getRecommendation(weather, activeHorse, settings, blankets, liners),
-    [weather, activeHorse, settings, blankets, liners]
-  );
-
-  const schedule = useMemo(
-    () => getDailySchedule(weather, activeHorse, settings, blankets, liners),
-    [weather, activeHorse, settings, blankets, liners]
-  );
-
-  // Compute recommendations for each forecast day based on high temp
-  const forecastWithRecs = useMemo(() => {
-    return forecast.map(day => {
-      const dayWeather = {
-        ...weather,
-        temp: day.high,
-        feelsLike: day.high - 4,
-        precipChance: day.precipChance || 0,
-        condition: day.condition
-      };
-      const rec = getRecommendation(dayWeather, activeHorse, settings, blankets, liners);
-      return { ...day, rec: recLabels[rec.weightNeeded] };
-    });
-  }, [forecast, weather, activeHorse, settings, blankets, liners]);
-
-  // Find upcoming cold snap for weather alert
-  const coldDay = forecast.find(day => day.low <= 20);
-
-  // Format last updated time
-  const formatLastUpdated = () => {
-    if (!lastUpdated) return null;
-    const now = new Date();
-    const diff = Math.floor((now - lastUpdated) / 60000); // minutes
-    if (diff < 1) return 'Just now';
-    if (diff < 60) return `${diff}m ago`;
-    return lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  };
 
   return (
     <div className="min-h-[calc(100vh-72px)] bg-[#FAF7F2]">

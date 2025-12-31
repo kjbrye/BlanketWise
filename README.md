@@ -104,14 +104,12 @@ npm run dev
 
 - **React 18** - UI framework
 - **Tailwind CSS 3.4** - Styling
-- **Vite 5** - Build tool
+- **Vite 7.3** - Build tool
 - **Playfair Display** - Display typography
 - **Source Sans 3** - Body typography
 
 ## Future Enhancements
 
-- [ ] Weather API integration for real-time data
-- [ ] Push notifications
 - [ ] Exercise logging with time stamps
 - [ ] Historical blanket usage tracking
 - [ ] Barn/stable sharing for multiple caretakers
