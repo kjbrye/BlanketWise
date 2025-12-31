@@ -6,6 +6,51 @@
 const WEATHER_API_BASE = 'https://api.open-meteo.com/v1/forecast';
 const GEOCODING_API_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
 
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_DELAY_MS = 1000;
+const REQUEST_TIMEOUT_MS = 10000;
+
+/**
+ * Fetch with retry logic and exponential backoff
+ * @param {string} url - URL to fetch
+ * @param {object} options - Fetch options
+ * @param {number} retries - Number of retries remaining
+ * @returns {Promise<Response>}
+ */
+async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    // Retry on server errors (5xx) or rate limiting (429)
+    if ((response.status >= 500 || response.status === 429) && retries > 0) {
+      const delay = INITIAL_DELAY_MS * Math.pow(2, MAX_RETRIES - retries);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    // Retry on network errors or timeouts
+    if (retries > 0 && (error.name === 'AbortError' || error.name === 'TypeError')) {
+      const delay = INITIAL_DELAY_MS * Math.pow(2, MAX_RETRIES - retries);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+
+    throw error;
+  }
+}
+
 // Default location: Madison, WI
 export const DEFAULT_LOCATION = {
   latitude: 43.0731,
@@ -69,7 +114,7 @@ export async function fetchWeather(latitude, longitude) {
     forecast_days: '7'
   });
 
-  const response = await fetch(`${WEATHER_API_BASE}?${params}`);
+  const response = await fetchWithRetry(`${WEATHER_API_BASE}?${params}`);
 
   if (!response.ok) {
     throw new Error(`Weather API error: ${response.status} ${response.statusText}`);
@@ -142,7 +187,7 @@ export async function searchLocation(query) {
     format: 'json'
   });
 
-  const response = await fetch(`${GEOCODING_API_BASE}?${params}`);
+  const response = await fetchWithRetry(`${GEOCODING_API_BASE}?${params}`);
 
   if (!response.ok) {
     throw new Error(`Geocoding API error: ${response.status}`);
@@ -216,7 +261,7 @@ export async function reverseGeocode(latitude, longitude) {
     });
 
     // Use the forecast API timezone to get a rough location name
-    const response = await fetch(`${WEATHER_API_BASE}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`);
+    const response = await fetchWithRetry(`${WEATHER_API_BASE}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`);
     if (response.ok) {
       const data = await response.json();
       // Extract city from timezone (e.g., "America/Chicago" -> "Chicago")

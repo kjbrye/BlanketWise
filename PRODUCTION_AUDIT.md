@@ -338,12 +338,12 @@ clearTimeout(timeout);
 - [ ] Add automated test suite
 
 ### Medium Priority (Soon After Launch)
-- [ ] Add weather API retry logic with exponential backoff
+- [x] Add weather API retry logic with exponential backoff
 - [ ] Enhance password policy with special character requirement
-- [ ] Add request timeout to weather API calls
+- [x] Add request timeout to weather API calls (included in retry logic)
 
 ### Low Priority (Future)
-- [ ] Remove duplicate line in `.gitignore`
+- [x] Remove duplicate line in `.gitignore`
 - [ ] Verify `sw-push.js` error handling
 
 ---
@@ -395,9 +395,9 @@ supabase/functions/daily-notifications/index.ts
 | 🟡 High | Set up error tracking service | ~2 hrs | ⬜ |
 | 🟡 High | Add rate limiting | ~4 hrs | ⬜ |
 | 🟡 High | Add automated tests | ~8 hrs | ⬜ |
-| 🟡 Medium | Add weather API retry logic | ~1 hr | ⬜ |
+| 🟡 Medium | Add weather API retry logic | ~1 hr | ✅ Fixed |
 | 🟡 Medium | Enhance password policy | ~30 min | ⬜ |
-| 🟢 Low | Fix .gitignore duplicate | ~1 min | ⬜ |
+| 🟢 Low | Fix .gitignore duplicate | ~1 min | ✅ Fixed |
 | 🟢 Low | Verify sw-push.js handling | ~15 min | ⬜ |
 
 ---
