@@ -4,12 +4,33 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT')!
 const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY')!
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 import webpush from 'https://esm.sh/web-push@3.6.6'
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
 serve(async (req) => {
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      { status: 405, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Verify authorization - only allow internal service calls or cron jobs
+  const authHeader = req.headers.get('Authorization')
+  const cronSecret = Deno.env.get('CRON_SECRET')
+
+  if (authHeader !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` &&
+      authHeader !== `Bearer ${cronSecret}`) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
