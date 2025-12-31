@@ -4,6 +4,7 @@ import { useAuth } from '../components/auth';
 import { linerFromDb, linerToDb, linerUpdatesToDb } from '../utils/caseConversion';
 import { linerSchema, linerUpdateSchema, validateOrThrow } from '../lib/validation';
 import { withTimeout } from '../utils/timeout';
+import { checkRateLimit, recordOperation } from '../utils/rateLimit';
 
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout for fetches
 const DEFAULT_LIMIT = 50; // Pagination limit
@@ -91,6 +92,13 @@ export function useLiners() {
   const addLiner = async (liner) => {
     if (!user) throw new Error('Must be logged in');
 
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
+
     // Validate input
     const validatedLiner = validateOrThrow(linerSchema, liner);
 
@@ -111,6 +119,13 @@ export function useLiners() {
   const updateLiner = async (linerId, updates) => {
     if (!user) throw new Error('Must be logged in');
 
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
+
     // Validate input
     const validatedUpdates = validateOrThrow(linerUpdateSchema, updates);
     const dbUpdates = linerUpdatesToDb(validatedUpdates);
@@ -129,6 +144,13 @@ export function useLiners() {
   // Delete a liner
   const deleteLiner = async (linerId) => {
     if (!user) throw new Error('Must be logged in');
+
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
 
     const { error: deleteError } = await supabase
       .from('liners')

@@ -3,6 +3,7 @@ import { supabase } from '../../supabase';
 import { profileFromDb } from '../../utils/caseConversion';
 import { withTimeout } from '../../utils/timeout';
 import { setUser as setSentryUser } from '../../lib/sentry';
+import { checkRateLimit, recordOperation, resetRateLimit } from '../../utils/rateLimit';
 
 const AuthContext = createContext({
   user: null,
@@ -132,15 +133,33 @@ export function AuthProvider({ children }) {
   };
 
   const signIn = async (email, password) => {
+    // Check rate limit before attempting sign in
+    const { allowed, retryAfter } = checkRateLimit('auth', email);
+    if (!allowed) {
+      throw new Error(`Too many login attempts. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('auth', email);
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) throw error;
+
+    // Reset rate limit on successful login
+    resetRateLimit('auth', email);
     return data;
   };
 
   const signUp = async (email, password, displayName) => {
+    // Check rate limit before attempting sign up
+    const { allowed, retryAfter } = checkRateLimit('auth', email);
+    if (!allowed) {
+      throw new Error(`Too many attempts. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('auth', email);
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -150,6 +169,7 @@ export function AuthProvider({ children }) {
         },
       },
     });
+
     if (error) throw error;
     return data;
   };

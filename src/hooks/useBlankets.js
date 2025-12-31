@@ -4,6 +4,7 @@ import { useAuth } from '../components/auth';
 import { blanketFromDb, blanketToDb, blanketUpdatesToDb } from '../utils/caseConversion';
 import { blanketSchema, blanketUpdateSchema, validateOrThrow } from '../lib/validation';
 import { withTimeout } from '../utils/timeout';
+import { checkRateLimit, recordOperation } from '../utils/rateLimit';
 
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout for fetches
 const DEFAULT_LIMIT = 50; // Pagination limit
@@ -91,6 +92,13 @@ export function useBlankets() {
   const addBlanket = async (blanket) => {
     if (!user) throw new Error('Must be logged in');
 
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
+
     // Validate input
     const validatedBlanket = validateOrThrow(blanketSchema, blanket);
 
@@ -111,6 +119,13 @@ export function useBlankets() {
   const updateBlanket = async (blanketId, updates) => {
     if (!user) throw new Error('Must be logged in');
 
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
+
     // Validate input
     const validatedUpdates = validateOrThrow(blanketUpdateSchema, updates);
     const dbUpdates = blanketUpdatesToDb(validatedUpdates);
@@ -129,6 +144,13 @@ export function useBlankets() {
   // Delete a blanket
   const deleteBlanket = async (blanketId) => {
     if (!user) throw new Error('Must be logged in');
+
+    // Check rate limit
+    const { allowed, retryAfter } = checkRateLimit('mutation', user.id);
+    if (!allowed) {
+      throw new Error(`Too many requests. Please try again in ${retryAfter} seconds.`);
+    }
+    recordOperation('mutation', user.id);
 
     const { error: deleteError } = await supabase
       .from('blankets')
