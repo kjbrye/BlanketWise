@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../../supabase';
 import { profileFromDb } from '../../utils/caseConversion';
+import { withTimeout } from '../../utils/timeout';
 
 const AuthContext = createContext({
   user: null,
@@ -34,16 +35,6 @@ function clearStoredSession() {
   }
 }
 
-// Wrap a promise with a timeout
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Session verification timed out')), ms)
-    )
-  ]);
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -73,7 +64,8 @@ export function AuthProvider({ children }) {
       try {
         const { data: { session } } = await withTimeout(
           supabase.auth.getSession(),
-          SESSION_TIMEOUT_MS
+          SESSION_TIMEOUT_MS,
+          'Session verification timed out'
         );
         setUser(session?.user ?? null);
 

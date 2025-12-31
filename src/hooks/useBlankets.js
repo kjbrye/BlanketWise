@@ -3,19 +3,10 @@ import { supabase } from '../supabase';
 import { useAuth } from '../components/auth';
 import { blanketFromDb, blanketToDb, blanketUpdatesToDb } from '../utils/caseConversion';
 import { blanketSchema, blanketUpdateSchema, validateOrThrow } from '../lib/validation';
+import { withTimeout } from '../utils/timeout';
 
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout for fetches
 const DEFAULT_LIMIT = 50; // Pagination limit
-
-// Wrap a promise with a timeout
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Request timed out')), ms)
-    )
-  ]);
-}
 
 export function useBlankets() {
   const { user } = useAuth();

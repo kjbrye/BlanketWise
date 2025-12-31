@@ -3,18 +3,9 @@ import { supabase } from '../supabase';
 import { useAuth } from '../components/auth';
 import { settingsFromDb, settingsToDb } from '../utils/caseConversion';
 import { defaultSettings } from '../data/defaults';
+import { withTimeout } from '../utils/timeout';
 
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout for fetches
-
-// Wrap a promise with a timeout
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Request timed out')), ms)
-    )
-  ]);
-}
 
 export function useSettings() {
   const { user } = useAuth();
