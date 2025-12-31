@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../../supabase';
 import { profileFromDb } from '../../utils/caseConversion';
 import { withTimeout } from '../../utils/timeout';
+import { setUser as setSentryUser } from '../../lib/sentry';
 
 const AuthContext = createContext({
   user: null,
@@ -158,7 +159,17 @@ export function AuthProvider({ children }) {
     if (error) throw error;
     setUser(null);
     setProfile(null);
+    setSentryUser(null); // Clear Sentry user context
   };
+
+  // Update Sentry user context when user changes
+  useEffect(() => {
+    if (user) {
+      setSentryUser({ id: user.id, email: user.email });
+    } else {
+      setSentryUser(null);
+    }
+  }, [user]);
 
   const updateProfile = async (updates) => {
     if (!user) return;

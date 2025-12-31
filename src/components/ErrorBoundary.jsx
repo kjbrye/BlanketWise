@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { captureError } from '../lib/sentry';
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -12,9 +13,16 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error to console in development, could send to error tracking service in production
-    console.error('Application error:', error);
-    console.error('Error info:', errorInfo.componentStack);
+    // Report error to Sentry
+    captureError(error, {
+      componentStack: errorInfo.componentStack,
+    });
+
+    // Also log to console in development
+    if (import.meta.env.DEV) {
+      console.error('Application error:', error);
+      console.error('Error info:', errorInfo.componentStack);
+    }
   }
 
   handleRefresh = () => {

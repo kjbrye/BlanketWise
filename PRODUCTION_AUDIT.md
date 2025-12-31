@@ -333,7 +333,7 @@ clearTimeout(timeout);
 - [x] Add security headers to `vercel.json`
 
 ### High Priority (Before Launch)
-- [ ] Set up error tracking service (Sentry/LogRocket)
+- [x] Set up error tracking service (Sentry)
 - [ ] Implement rate limiting on user operations
 - [ ] Add automated test suite
 
@@ -392,7 +392,7 @@ supabase/functions/daily-notifications/index.ts
 |----------|-------|--------|--------|
 | 🔴 Critical | Add auth to daily-notifications function | ~30 min | ✅ Fixed |
 | 🔴 Critical | Add security headers to vercel.json | ~15 min | ✅ Fixed |
-| 🟡 High | Set up error tracking service | ~2 hrs | ⬜ |
+| 🟡 High | Set up error tracking service | ~2 hrs | ✅ Fixed |
 | 🟡 High | Add rate limiting | ~4 hrs | ⬜ |
 | 🟡 High | Add automated tests | ~8 hrs | ⬜ |
 | 🟡 Medium | Add weather API retry logic | ~1 hr | ✅ Fixed |
