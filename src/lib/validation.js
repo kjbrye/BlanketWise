@@ -158,18 +158,20 @@ export const settingsUpdateSchema = z.object({
  * Validate data against a schema
  * @param {z.ZodSchema} schema - The zod schema to validate against
  * @param {unknown} data - The data to validate
- * @returns {{ success: true, data: any } | { success: false, error: string }}
+ * @returns {{ success: true, data: any } | { success: false, error: string, errors: string[] }}
  */
 export function validate(schema, data) {
   const result = schema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
   }
-  // Get the first error message (with safe access)
-  const firstError = result.error?.errors?.[0];
+  // Get all error messages (with safe access)
+  const errors = result.error?.errors?.map(e => e.message) || [];
+  const firstError = errors[0] || result.error?.message || 'Validation failed';
   return {
     success: false,
-    error: firstError?.message || result.error?.message || 'Validation failed',
+    error: firstError,
+    errors: errors.length > 0 ? errors : [firstError],
   };
 }
 

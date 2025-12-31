@@ -10,12 +10,12 @@ export default function SignUpForm({ onSwitchToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState([]);
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setErrors([]);
 
     // Validate using zod schema
     const validation = validate(signUpSchema, {
@@ -26,7 +26,7 @@ export default function SignUpForm({ onSwitchToLogin }) {
     });
 
     if (!validation.success) {
-      setError(validation.error);
+      setErrors(validation.errors || [validation.error]);
       return;
     }
 
@@ -40,7 +40,7 @@ export default function SignUpForm({ onSwitchToLogin }) {
       }
       // Otherwise the auth state change will handle the redirect
     } catch (err) {
-      setError(err.message);
+      setErrors([err.message]);
     } finally {
       setLoading(false);
     }
@@ -89,10 +89,18 @@ export default function SignUpForm({ onSwitchToLogin }) {
           </p>
         </div>
 
-        {/* Error Message */}
-        {error && (
+        {/* Error Messages */}
+        {errors.length > 0 && (
           <div role="alert" aria-live="polite" className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-            {error}
+            {errors.length === 1 ? (
+              errors[0]
+            ) : (
+              <ul className="list-disc list-inside space-y-1">
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -143,9 +151,12 @@ export default function SignUpForm({ onSwitchToLogin }) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-[rgba(139,69,19,0.2)] focus:border-[#D4A84B] focus:ring-2 focus:ring-[#D4A84B]/20 focus:outline-none transition-colors bg-[#FDF8F0]/50"
-                placeholder="At least 12 characters"
+                placeholder="Create a strong password"
               />
             </div>
+            <p className="mt-1 text-xs text-[#6B5344]">
+              At least 12 characters with a letter and a number
+            </p>
           </div>
 
           <div>
