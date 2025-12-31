@@ -344,7 +344,7 @@ clearTimeout(timeout);
 
 ### Low Priority (Future)
 - [x] Remove duplicate line in `.gitignore`
-- [ ] Verify `sw-push.js` error handling
+- [x] Verify `sw-push.js` error handling
 
 ---
 
@@ -398,7 +398,7 @@ supabase/functions/daily-notifications/index.ts
 | 🟡 Medium | Add weather API retry logic | ~1 hr | ✅ Fixed |
 | 🟡 Medium | Enhance password policy | ~30 min | ⬜ |
 | 🟢 Low | Fix .gitignore duplicate | ~1 min | ✅ Fixed |
-| 🟢 Low | Verify sw-push.js handling | ~15 min | ⬜ |
+| 🟢 Low | Verify sw-push.js handling | ~15 min | ✅ Fixed |
 
 ---
 
